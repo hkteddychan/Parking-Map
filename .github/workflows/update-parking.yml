@@ -1,0 +1,39 @@
+name: Update Parking Data
+
+on:
+  schedule:
+    # Every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run update script
+        run: |
+          python update_parking_data.py
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet parking-data.json; then
+            echo "No changes to commit"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add parking-data.json
+            git commit -m "Auto-update parking data $(date +'%Y-%m-%d %H:%M')"
+            git push origin main
+          fi
