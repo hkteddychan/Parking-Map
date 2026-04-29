@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Capacitor
+android/
+
+# Build outputs
+*.apk
+*.aab
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temp files
+*.tmp
+*.swp

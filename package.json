@@ -1,0 +1,29 @@
+{
+  "name": "parking-map",
+  "version": "1.0.0",
+  "description": "實時顯示香港停車場及街上感應泊位的空置情況。",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'Static HTML - no build needed'",
+    "cap:sync": "npx cap sync android",
+    "cap:build": "npx cap sync android && cd android && ./gradlew assembleDebug"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hkteddychan/Parking-Map.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hkteddychan/Parking-Map/issues"
+  },
+  "homepage": "https://github.com/hkteddychan/Parking-Map#readme",
+  "dependencies": {
+    "@capacitor/android": "^7.6.2",
+    "@capacitor/cli": "^7.6.2",
+    "@capacitor/core": "^7.6.2",
+    "@capacitor/haptics": "^7.0.5",
+    "@capacitor/status-bar": "^7.0.6"
+  }
+}
