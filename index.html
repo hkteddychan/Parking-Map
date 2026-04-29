@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>香港停車場空位地圖</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Microsoft JhengHei", sans-serif; }
+  #map { width: 100vw; height: 100vh; }
+
+  .controls {
+    position: absolute; top: 10px; left: 10px;
+    z-index: 1000; display: flex; flex-direction: column; gap: 8px;
+    max-width: 340px;
+  }
+
+  .header-card {
+    background: white; border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    padding: 12px 14px;
+  }
+  .header-card h1 {
+    font-size: 17px; font-weight: 800; color: #222;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .header-card h1 span { font-size: 22px; }
+  .header-card p { font-size: 12px; color: #888; margin-top: 4px; }
+
+  .stats-bar {
+    display: flex; gap: 8px; margin-top: 8px;
+  }
+  .stat-item {
+    flex: 1; background: #f5f5f5; border-radius: 8px;
+    padding: 6px 8px; text-align: center;
+  }
+  .stat-item .num {
+    font-size: 20px; font-weight: 900;
+  }
+  .stat-item .label { font-size: 10px; color: #888; margin-top: 1px; }
+  .stat-green .num { color: #27ae60; }
+  .stat-red .num { color: #e74c3c; }
+  .stat-gray .num { color: #95a5a6; }
+  .stat-total .num { color: #3498db; }
+
+  .filter-card {
+    background: white; border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    padding: 10px 12px;
+  }
+  .filter-label { font-size: 11px; color: #999; font-weight: 600; margin-bottom: 6px; }
+  .filter-pills { display: flex; gap: 5px; flex-wrap: wrap; }
+  .pill {
+    padding: 4px 10px; border-radius: 14px; font-size: 12px; font-weight: 600;
+    border: 2px solid transparent; cursor: pointer; transition: all 0.2s;
+    background: #f0f0f0; color: #666;
+  }
+  .pill.active { color: white; }
+  .pill[data-v=green].active { background: #27ae60; }
+  .pill[data-v=red].active { background: #e74c3c; }
+  .pill[data-v=gray].active { background: #95a5a6; }
+  .pill[data-v=all].active { background: #3498db; }
+
+  .refresh-card {
+    background: white; border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    padding: 8px 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .refresh-btn {
+    background: #3498db; color: white; border: none;
+    padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    cursor: pointer;
+  }
+  .refresh-btn:hover { background: #2980b9; }
+  .last-update { font-size: 11px; color: #aaa; }
+
+  /* Parking marker */
+  .park-icon {
+    width: 36px !important; height: 36px !important;
+  }
+  .park-icon-inner {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 900; color: white;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.35);
+    border: 3px solid rgba(255,255,255,0.8);
+    position: relative; overflow: hidden;
+  }
+  .park-icon-inner::before {
+    content: 'P'; font-size: 18px; font-weight: 900;
+    color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    position: relative; z-index: 1;
+  }
+  .park-icon-inner.full { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+  .park-icon-inner.available { background: linear-gradient(135deg, #27ae60, #1e8449); }
+  .park-icon-inner.unknown { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
+  .park-icon-inner::after {
+    content: ''; position: absolute; top: 3px; left: 3px; right: 3px; height: 10px;
+    background: rgba(255,255,255,0.3); border-radius: 4px 4px 0 0;
+  }
+
+  /* Popup */
+  .pk-popup .leaflet-popup-content-wrapper {
+    border-radius: 12px; padding: 0;
+  }
+  .pk-popup .leaflet-popup-content {
+    margin: 0; min-width: 240px;
+  }
+  .pk-header {
+    padding: 14px 14px 10px;
+    border-bottom: 1px solid #eee;
+  }
+  .pk-name { font-size: 15px; font-weight: 700; color: #222; }
+  .pk-addr { font-size: 12px; color: #888; margin-top: 3px; }
+  .pk-body { padding: 10px 14px 12px; }
+  .pk-vacancy {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+  }
+  .pk-vacancy-num {
+    font-size: 36px; font-weight: 900; line-height: 1;
+  }
+  .pk-vacancy-num.green { color: #27ae60; }
+  .pk-vacancy-num.red { color: #e74c3c; }
+  .pk-vacancy-num.gray { color: #95a5a6; }
+  .pk-vacancy-label { font-size: 13px; color: #888; }
+  .pk-vacancy-label strong { color: #333; font-size: 15px; }
+  .pk-meta {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  }
+  .pk-meta-item {
+    background: #f5f5f5; border-radius: 8px; padding: 7px 10px;
+  }
+  .pk-meta-item .label { font-size: 10px; color: #aaa; }
+  .pk-meta-item .value { font-size: 13px; font-weight: 700; color: #333; margin-top: 1px; }
+  .pk-status-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 11px; font-weight: 700; margin-top: 6px;
+  }
+  .pk-status-badge.available { background: #d4efdf; color: #1e8449; }
+  .pk-status-badge.full { background: #fadbd8; color: #c0392b; }
+  .pk-status-badge.unknown { background: #f0f0f0; color: #7f8c8d; }
+  .pk-lastupdate { font-size: 10px; color: #bbb; margin-top: 6px; }
+  .leaflet-popup-tip { display: none; }
+
+  .legend-card {
+    position: absolute; bottom: 30px; right: 10px;
+    z-index: 1000; background: white;
+    border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    padding: 10px 12px;
+  }
+  .legend-title { font-size: 11px; color: #999; font-weight: 600; margin-bottom: 6px; }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #555; margin-bottom: 4px; }
+  .legend-dot { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
+  .legend-dot.green { background: #27ae60; }
+  .legend-dot.red { background: #e74c3c; }
+  .legend-dot.gray { background: #95a5a6; }
+
+  #loading {
+    position: fixed; inset: 0; background: rgba(255,255,255,0.95);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 9999;
+  }
+  #loading .spinner {
+    width: 40px; height: 40px; border: 4px solid #e0e0e0;
+    border-top-color: #3498db; border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  #loading p { margin-top: 14px; font-size: 15px; color: #666; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <p>正在載入停車場數據...</p>
+</div>
+
+<div id="map"></div>
+
+<div class="controls">
+  <div class="header-card">
+    <h1>🚗 <span>香港停車場空位</span></h1>
+    <p>運輸署實時數據 · <span id="total-count">--</span> 個停車場</p>
+    <div class="stats-bar">
+      <div class="stat-item stat-green">
+        <div class="num" id="stat-green">--</div>
+        <div class="label">有位</div>
+      </div>
+      <div class="stat-item stat-red">
+        <div class="num" id="stat-red">--</div>
+        <div class="label">已滿</div>
+      </div>
+      <div class="stat-item stat-gray">
+        <div class="num" id="stat-gray">--</div>
+        <div class="label">無數據</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-card">
+    <div class="filter-label">顯示篩選</div>
+    <div class="filter-pills">
+      <div class="pill active" data-v="all">全部</div>
+      <div class="pill" data-v="green">有位</div>
+      <div class="pill" data-v="red">已滿</div>
+      <div class="pill" data-v="gray">無數據</div>
+    </div>
+  </div>
+
+  <div class="refresh-card">
+    <button class="refresh-btn" onclick="refreshData()">🔄 刷新</button>
+    <span class="last-update" id="last-update">--</span>
+  </div>
+</div>
+
+<div class="legend-card">
+  <div class="legend-title">圖例</div>
+  <div class="legend-item"><div class="legend-dot green"></div>有空位</div>
+  <div class="legend-item"><div class="legend-dot red"></div>已滿</div>
+  <div class="legend-item"><div class="legend-dot gray"></div>無數據</div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ============ CONFIG ============
+const HK_CENTER = [22.3193, 114.1694];
+const DEFAULT_ZOOM = 12;
+const DATA_URLS = {
+  basic: 'https://resource.data.one.gov.hk/td/carpark/basic_info_all.json',
+  vacancy: 'https://resource.data.one.gov.hk/td/carpark/vacancy_all.json'
+};
+
+// ============ STATE ============
+let map, markers = [];
+let carparkData = [];
+let vacIndex = {};
+let currentFilter = 'all';
+let lastUpdateTime = null;
+
+// ============ COLORS ============
+function getStatus(cp) {
+  const v = cp.vacancy;
+  if (v === null || v === undefined || v < 0) return 'gray';  // no data
+  if (v === 0) return 'red';  // full
+  return 'green';  // available
+}
+function getColor(status) {
+  return { green: '#27ae60', red: '#e74c3c', gray: '#95a5a6' }[status];
+}
+function getIcon(status) {
+  const cls = status === 'green' ? 'available' : status === 'red' ? 'full' : 'unknown';
+  return L.divIcon({
+    html: `<div class="park-icon-inner ${cls}"></div>`,
+    className: 'park-icon', iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -14]
+  });
+}
+
+// ============ INIT ============
+async function init() {
+  map = L.map('map').setView(HK_CENTER, DEFAULT_ZOOM);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap © CARTO', maxZoom: 19
+  }).addTo(map);
+
+  // District boundary layer (simple circles for now)
+  map.on('moveend', loadStopsInView);
+  map.on('zoomend', loadStopsInView);
+
+  await loadData();
+  setupFilterPills();
+  document.getElementById('loading').style.display = 'none';
+}
+
+// ============ DATA ============
+async function loadData() {
+  try {
+    const [basicRes, vacRes] = await Promise.all([
+      fetch(DATA_URLS.basic), fetch(DATA_URLS.vacancy)
+    ]);
+    const basic = (await basicRes.json()).car_park;
+    const vac = (await vacRes.json()).car_park;
+
+    vacIndex = {};
+    vac.forEach(cp => { vacIndex[cp.park_id] = cp; });
+
+    carparkData = basic.map(cp => {
+      const v = vacIndex[cp.park_id];
+      let vacancy = null;
+      if (v) {
+        for (const vt of v.vehicle_type || []) {
+          if (vt.type === 'P') {
+            for (const sc of vt.service_category || []) {
+              if (sc.category === 'HOURLY') {
+                vacancy = sc.vacancy;
+                break;
+              }
+            }
+          }
+        }
+      }
+      return { ...cp, vacancy };
+    });
+
+    lastUpdateTime = new Date();
+    document.getElementById('last-update').textContent =
+      `更新: ${lastUpdateTime.getHours().toString().padStart(2,'0')}:${lastUpdateTime.getMinutes().toString().padStart(2,'0')}:${lastUpdateTime.getSeconds().toString().padStart(2,'0')}`;
+
+    updateStats();
+    loadStopsInView();
+  } catch (e) {
+    console.error(e);
+    document.querySelector('#loading p').textContent = '載入失敗，請刷新';
+  }
+}
+
+async function refreshData() {
+  document.getElementById('last-update').textContent = '更新中...';
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+  await loadData();
+}
+
+// ============ RENDER ============
+function loadStopsInView() {
+  const bounds = map.getBounds();
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+
+  carparkData.forEach(cp => {
+    const lat = parseFloat(cp.latitude), lng = parseFloat(cp.longitude);
+    if (!lat || !lng) return;
+    if (!bounds.contains([lat, lng])) return;
+
+    const status = getStatus(cp);
+    if (currentFilter !== 'all' && status !== currentFilter) return;
+
+    const m = L.marker([lat, lng], { icon: getIcon(status) });
+    m.bindPopup(createPopup(cp, status), { className: 'pk-popup', maxWidth: 300 });
+    m.addTo(map);
+    markers.push(m);
+  });
+}
+
+function createPopup(cp, status) {
+  const v = cp.vacancy;
+  const statusLabel = status === 'green' ? '有空位' : status === 'red' ? '已滿' : '無數據';
+  const vacNum = v !== null && v >= 0 ? v : '--';
+  const lastUp = cp.vacancy_lastupdate || '';
+
+  return `
+    <div class="pk-header">
+      <div class="pk-name">${cp.name_tc || cp.name_en}</div>
+      <div class="pk-addr">${cp.displayAddress_tc || cp.displayAddress_en || ''}</div>
+    </div>
+    <div class="pk-body">
+      <div class="pk-vacancy">
+        <div class="pk-vacancy-num ${status}">${vacNum}</div>
+        <div class="pk-vacancy-label">個空位<br><strong>${cp.district_tc || ''}</strong></div>
+      </div>
+      <div class="pk-meta">
+        <div class="pk-meta-item">
+          <div class="label">狀態</div>
+          <div class="value"><span class="pk-status-badge ${status}">${statusLabel}</span></div>
+        </div>
+        <div class="pk-meta-item">
+          <div class="label">高度限制</div>
+          <div class="value">${cp.height > 0 ? cp.height + 'm' : '無'}</div>
+        </div>
+        ${cp.contactNo ? `
+        <div class="pk-meta-item">
+          <div class="label">電話</div>
+          <div class="value">${cp.contactNo}</div>
+        </div>` : ''}
+        <div class="pk-meta-item">
+          <div class="label">資料更新</div>
+          <div class="value">${cp.vacancy_lastupdate ? cp.vacancy_lastupdate.split(' ')[1]?.slice(0,5) || cp.vacancy_lastupdate : '--'}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function updateStats() {
+  document.getElementById('total-count').textContent = carparkData.length;
+  let green = 0, red = 0, gray = 0;
+  carparkData.forEach(cp => {
+    const s = getStatus(cp);
+    if (s === 'green') green++;
+    else if (s === 'red') red++;
+    else gray++;
+  });
+  document.getElementById('stat-green').textContent = green;
+  document.getElementById('stat-red').textContent = red;
+  document.getElementById('stat-gray').textContent = gray;
+}
+
+function setupFilterPills() {
+  document.querySelectorAll('.pill').forEach(pill => {
+    pill.onclick = () => {
+      document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentFilter = pill.dataset.v;
+      loadStopsInView();
+    };
+  });
+}
+
+// Auto-refresh every 30s
+setInterval(refreshData, 30000);
+
+init();
+</script>
+</body>
+</html>
