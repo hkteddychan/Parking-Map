@@ -20,10 +20,8 @@
   },
   "homepage": "https://github.com/hkteddychan/Parking-Map#readme",
   "dependencies": {
-    "@capacitor/android": "^7.6.2",
-    "@capacitor/cli": "^7.6.2",
-    "@capacitor/core": "^7.6.2",
-    "@capacitor/haptics": "^7.0.5",
-    "@capacitor/status-bar": "^7.0.6"
+    "@capacitor/android": "^5.7.8",
+    "@capacitor/cli": "^5.7.8",
+    "@capacitor/core": "^5.7.8"
   }
 }

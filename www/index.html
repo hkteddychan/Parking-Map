@@ -215,217 +215,423 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ============ CONFIG ============
-const HK_CENTER = [22.3193, 114.1694];
-const DEFAULT_ZOOM = 12;
+// ============================================================
+//  香港停車場及街上泊位地圖 — parking-map 增強版
+//  Fixes: race-condition guard, debounce, independent fetch,
+//         timeout, null-safety, XHTML escaping, refresh state
+// ============================================================
 
-// ============ STATE ============
-let map, markers = [];
-let carparkData = [], onstreetData = [];
-let currentFilter = 'all';
-let currentType = 'both';
+(function () {
+  'use strict';
 
-// ============ STATUS ============
-function getStatus(cp) {
-  if (cp.type === 'onstreet') {
-    if (cp.status === 'V') return 'green';
-    if (cp.status === 'O') return 'red';
-    return 'gray';
+  // ── CONFIG ────────────────────────────────────────────────
+  const HK_CENTER    = [22.3193, 114.1694];
+  const DEFAULT_ZOOM = 12;
+  const FETCH_TIMEOUT_MS = 15000;   // 15 s per request
+  const DEBOUNCE_MS      = 250;     // pan/zoom debounce
+
+  // ── STATE ─────────────────────────────────────────────────
+  let map          = null;
+  let markers      = [];
+  let carparkData  = [];
+  let onstreetData = [];
+  let currentFilter = 'all';
+  let currentType   = 'both';
+
+  // Guard against concurrent / overlapping loadData() calls
+  let loadController = null;   // AbortController for in-flight fetches
+  let isLoading      = false;  // UI lock flag
+
+  // ── UTIL ──────────────────────────────────────────────────
+  /**
+   * Wrap a fetch with an AbortController timeout.
+   * @param {string} url
+   * @param {AbortSignal} signal  external signal (e.g. from loadController)
+   * @returns {Promise<Response>}
+   */
+  function fetchWithTimeout(url, signal) {
+    const to = setTimeout(() => signal.throw?.(), FETCH_TIMEOUT_MS);
+    return fetch(url, { signal })
+      .finally(() => clearTimeout(to));
   }
-  // Carpark: vacancy can be 0, positive int, or null/string "N/A"/"-"
-  const v = cp.vacancy;
-  if (v === null || v === undefined || v === '' || v === 'N/A' || v === '-' || v < 0) return 'gray';
-  if (v === 0) return 'red';
-  return 'green';
-}
 
-function getIcon(cp, status) {
-  const cls = status;
-  if (cp.type === 'onstreet') {
+  /** Gentle debounce — stores pending call, cancels previous. */
+  function debounce(fn, ms) {
+    let timer = null;
+    return function (...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), ms);
+    };
+  }
+
+  /** Escape HTML entities to prevent XSS in popups. */
+  function esc(str) {
+    if (str == null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  /** Null-safe parseFloat — returns null for non-numeric input. */
+  function safeFloat(val) {
+    if (val == null || val === '') return null;
+    const f = parseFloat(val);
+    return isNaN(f) ? null : f;
+  }
+
+  /** Format a Date to HH:MM:SS local time string. */
+  function fmtTime(d) {
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    const ss = String(d.getSeconds()).padStart(2, '0');
+    return `${hh}:${mm}:${ss}`;
+  }
+
+  // ── STATUS ────────────────────────────────────────────────
+  function getStatus(cp) {
+    if (cp.type === 'onstreet') {
+      if (cp.status === 'V') return 'green';
+      if (cp.status === 'O') return 'red';
+      return 'gray';
+    }
+    // Carpark
+    const v = cp.vacancy;
+    if (v === null || v === undefined || v === '' ||
+        v === 'N/A' || v === '-' || Number(v) < 0) {
+      return 'gray';
+    }
+    return Number(v) === 0 ? 'red' : 'green';
+  }
+
+  function getIcon(cp, status) {
+    const cls = esc(status);
+    if (cp.type === 'onstreet') {
+      return L.divIcon({
+        html: `<div class="os-icon-inner ${cls}"></div>`,
+        className: 'os-icon',
+        iconSize: [20, 20], iconAnchor: [10, 10], popupAnchor: [0, -8]
+      });
+    }
     return L.divIcon({
-      html: `<div class="os-icon-inner ${cls}"></div>`,
-      className: 'os-icon', iconSize: [20, 20], iconAnchor: [10, 10], popupAnchor: [0, -8]
+      html: `<div class="pk-icon-inner ${cls}">P</div>`,
+      className: 'pk-icon',
+      iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -14]
     });
   }
-  return L.divIcon({
-    html: `<div class="pk-icon-inner ${cls}">P</div>`,
-    className: 'pk-icon', iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -14]
-  });
-}
 
-// ============ INIT ============
-async function init() {
-  map = L.map('map').setView(HK_CENTER, DEFAULT_ZOOM);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© OpenStreetMap © CARTO', maxZoom: 19
-  }).addTo(map);
+  // ── INIT ──────────────────────────────────────────────────
+  async function init() {
+    // Initialise Leaflet map
+    map = L.map('map', { zoomControl: true }).setView(HK_CENTER, DEFAULT_ZOOM);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap © CARTO',
+      maxZoom: 19
+    }).addTo(map);
 
-  map.on('moveend', loadStopsInView);
-  map.on('zoomend', loadStopsInView);
+    // Debounced render on map movement
+    const debouncedRender = debounce(loadStopsInView, DEBOUNCE_MS);
+    map.on('moveend',   debouncedRender);
+    map.on('zoomend',   debouncedRender);
 
-  setupFilterPills();
-  setupTypePills();
-  await loadData();
-  document.getElementById('loading').style.display = 'none';
-}
+    setupFilterPills();
+    setupTypePills();
+    setupRefreshButton();
 
-// ============ DATA ============
-async function loadData() {
-  try {
-    // Load onstreet from static JSON (NMOSPIOT has no CORS)
-    const jsonRes = await fetch('parking-data.json');
-    const jsonData = await jsonRes.json();
-    onstreetData = (jsonData.onstreet || []).map(os => ({ ...os, type: 'onstreet' }));
+    await loadData();
+    hideLoading();
+  }
 
-    // Fetch carpark data directly from TD API (CORS: *, no auth needed)
-    const [cpBasic, cpVacancy] = await Promise.all([
-      fetch('https://resource.data.one.gov.hk/td/carpark/basic_info_all.json').then(r => r.json()),
-      fetch('https://resource.data.one.gov.hk/td/carpark/vacancy_all.json').then(r => r.json())
-    ]);
+  // ── DATA FETCH ────────────────────────────────────────────
+  /**
+   * Load / refresh all parking data.
+   * Guard: if a fetch is already in-flight, abort it first.
+   * Independent fetches: each API is fetched on its own timeline;
+   *   results are merged when both resolve.
+   */
+  async function loadData() {
+    // Cancel any in-flight request
+    if (loadController) {
+      loadController.abort();
+      loadController = null;
+    }
 
-    // Index vacancy by park_id
-    const vacIndex = {};
-    for (const v of (cpVacancy.car_park || [])) {
-      const pid = v.park_id;
-      for (const vt of (v.vehicle_type || [])) {
-        if (vt.type === 'P') {
-          for (const sc of (vt.service_category || [])) {
-            if (sc.category === 'HOURLY') {
-              vacIndex[pid] = sc.vacancy;
+    // Fresh AbortController for this run
+    loadController = new AbortController();
+    const signal = loadController.signal;
+
+    setLoadingState(true);
+
+    try {
+      // ── 1. On-street (static JSON, cached — add bust param on refresh)
+      const jsonRes = await fetchWithTimeout(
+        `parking-data.json?t=${Date.now()}`, signal
+      );
+      if (!jsonRes.ok) throw new Error(`HTTP ${jsonRes.status} parking-data.json`);
+      const jsonData = await jsonRes.json();
+
+      // ── 2. TD carpark APIs — fetched independently so one failure
+      //       does not doom the whole operation
+      let cpBasic   = null;
+      let cpVacancy = null;
+      let fetchErrors = [];
+
+      try {
+        const r1 = await fetchWithTimeout(
+          'https://resource.data.one.gov.hk/td/carpark/basic_info_all.json',
+          signal
+        );
+        if (!r1.ok) throw new Error(`HTTP ${r1.status} basic_info_all`);
+        cpBasic = await r1.json();
+      } catch (e) {
+        if (e.name === 'AbortError') throw e;          // re-throw abort
+        fetchErrors.push('停車場基本資料');
+        console.warn('basic_info_all failed:', e);
+      }
+
+      try {
+        const r2 = await fetchWithTimeout(
+          'https://resource.data.one.gov.hk/td/carpark/vacancy_all.json',
+          signal
+        );
+        if (!r2.ok) throw new Error(`HTTP ${r2.status} vacancy_all`);
+        cpVacancy = await r2.json();
+      } catch (e) {
+        if (e.name === 'AbortError') throw e;
+        fetchErrors.push('停車場空位數據');
+        console.warn('vacancy_all failed:', e);
+      }
+
+      // ── 3. Process on-street
+      onstreetData = (jsonData.onstreet || []).map(os => ({
+        ...os,
+        type: 'onstreet'
+      }));
+
+      // ── 4. Process carpark vacancy index
+      const vacIndex = {};
+      if (cpVacancy && cpVacancy.car_park) {
+        for (const v of cpVacancy.car_park) {
+          const pid = v.park_id;
+          for (const vt of (v.vehicle_type || [])) {
+            if (vt.type !== 'P') continue;
+            for (const sc of (vt.service_category || [])) {
+              if (sc.category === 'HOURLY') {
+                vacIndex[pid] = sc.vacancy;   // may be 0
+              }
             }
           }
         }
       }
+
+      // ── 5. Merge carpark data
+      carparkData = (cpBasic?.car_park || []).map(cp => ({
+        ...cp,
+        type: 'carpark',
+        vacancy: Object.prototype.hasOwnProperty.call(vacIndex, cp.park_id)
+          ? vacIndex[cp.park_id]
+          : null
+      }));
+
+      // ── 6. Update UI
+      const now = new Date();
+      document.getElementById('last-update').textContent =
+        `實時 · ${fmtTime(now)}${fetchErrors.length ? ' ⚠' : ''}`;
+
+      updateStats();
+      loadStopsInView();
+
+    } catch (e) {
+      if (e.name === 'AbortError') return;   // intentional abort, ignore
+      console.error('Load error:', e);
+      showLoadError('載入失敗，請稍後再試');
+    } finally {
+      setLoadingState(false);
+      loadController = null;
+    }
+  }
+
+  // ── RENDER ─────────────────────────────────────────────────
+  function loadStopsInView() {
+    if (!map) return;
+
+    // Remove existing markers
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
+
+    // Dataset selection
+    let dataset;
+    if (currentType === 'carpark') {
+      dataset = carparkData;
+    } else if (currentType === 'onstreet') {
+      dataset = onstreetData;
+    } else {
+      dataset = [...carparkData, ...onstreetData];
     }
 
-    // Merge carparks
-    carparkData = (cpBasic.car_park || []).map(cp => ({
-      ...cp,
-      type: 'carpark',
-      vacancy: vacIndex[cp.park_id] ?? null
-    }));
+    const bounds = map.getBounds();
 
-    const now = new Date();
-    document.getElementById('last-update').textContent =
-      `實時 · ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+    dataset.forEach(cp => {
+      // Fast-path: filter by status first (avoids expensive bounds check)
+      const status = getStatus(cp);
+      if (currentFilter !== 'all' && status !== currentFilter) return;
 
-    updateStats();
-    loadStopsInView();
-  } catch (e) {
-    console.error('Load error:', e);
-    document.querySelector('#loading p').textContent = '載入失敗，請刷新';
+      // Validate coordinates
+      const lat = safeFloat(cp.latitude);
+      const lng = safeFloat(cp.longitude);
+      if (lat == null || lng == null) return;
+      if (!bounds.contains([lat, lng])) return;
+
+      const m = L.marker([lat, lng], { icon: getIcon(cp, status) });
+      m.bindPopup(createPopup(cp, status), { className: 'pk-popup', maxWidth: 300 });
+      m.addTo(map);
+      markers.push(m);
+    });
   }
-}
 
-// ============ RENDER ============
-function loadStopsInView() {
-  const bounds = map.getBounds();
-  markers.forEach(m => map.removeLayer(m));
-  markers = [];
+  function createPopup(cp, status) {
+    if (cp.type === 'onstreet') {
+      const statusText = cp.status === 'V' ? '空置'
+        : cp.status === 'O' ? '已被佔用'
+        : '不可用';
+      const icon = cp.status === 'V' ? '✓'
+        : cp.status === 'O' ? '✗'
+        : '?';
+      return `
+      <div class="pk-header">
+        <div class="pk-name">${esc(cp.name_tc) || esc(cp.name_en) || '无名稱'}</div>
+        <div class="pk-addr">${esc(cp.address_tc) || esc(cp.address_en) || ''}</div>
+      </div>
+      <div class="pk-body">
+        <div class="pk-vacancy">
+          <div class="pk-vacancy-num ${esc(status)}">${icon}</div>
+          <div class="pk-vacancy-label"><strong>${esc(statusText)}</strong><br>${esc(cp.district_tc || '')}</div>
+        </div>
+        <span class="pk-badge onstreet">📍 街上感應泊位</span>
+        ${cp.last_change ? `<div class="pk-lastupdate">更新: ${esc(cp.last_change)}</div>` : ''}
+      </div>`;
+    }
 
-  const all = currentType === 'both' ? [...carparkData, ...onstreetData]
-    : currentType === 'carpark' ? carparkData : onstreetData;
+    // Carpark popup
+    const v = cp.vacancy;
+    const vacNum = (v !== null && v !== undefined && Number(v) >= 0) ? Number(v) : '--';
+    const statusLabel = status === 'green' ? '有空位'
+      : status === 'red'   ? '已滿'
+      : '無數據';
+    const height = safeFloat(cp.height);
+    const heightStr = height != null && height > 0 ? `${height}m` : '無';
 
-  all.forEach(cp => {
-    const lat = parseFloat(cp.latitude), lng = parseFloat(cp.longitude);
-    if (!lat || !lng) return;
-    if (!bounds.contains([lat, lng])) return;
-
-    const status = getStatus(cp);
-    if (currentFilter !== 'all' && status !== currentFilter) return;
-
-    const m = L.marker([lat, lng], { icon: getIcon(cp, status) });
-    m.bindPopup(createPopup(cp, status), { className: 'pk-popup', maxWidth: 300 });
-    m.addTo(map);
-    markers.push(m);
-  });
-}
-
-function createPopup(cp, status) {
-  if (cp.type === 'onstreet') {
-    const statusText = cp.status === 'V' ? '空置' : cp.status === 'O' ? '已被佔用' : '不可用';
-    const icon = cp.status === 'V' ? '✓' : cp.status === 'O' ? '✗' : '?';
     return `
     <div class="pk-header">
-      <div class="pk-name">${cp.name_tc || cp.name_en}</div>
-      <div class="pk-addr">${cp.address_tc || cp.address_en}</div>
+      <div class="pk-name">${esc(cp.name_tc) || esc(cp.name_en) || '无名稱'}</div>
+      <div class="pk-addr">${esc(cp.displayAddress_tc) || esc(cp.displayAddress_en) || ''}</div>
     </div>
     <div class="pk-body">
       <div class="pk-vacancy">
-        <div class="pk-vacancy-num ${status}">${icon}</div>
-        <div class="pk-vacancy-label"><strong>${statusText}</strong><br>${cp.district_tc || ''}</div>
-      </div>
-      <span class="pk-badge onstreet">📍 街上感應泊位</span>
-      ${cp.last_change ? `<div class="pk-lastupdate">更新: ${cp.last_change}</div>` : ''}
-    </div>`;
-  }
-
-  const v = cp.vacancy;
-  const vacNum = v !== null && v >= 0 ? v : '--';
-  const statusLabel = status === 'green' ? '有空位' : status === 'red' ? '已滿' : '無數據';
-  return `
-    <div class="pk-header">
-      <div class="pk-name">${cp.name_tc || cp.name_en}</div>
-      <div class="pk-addr">${cp.displayAddress_tc || cp.displayAddress_en || ''}</div>
-    </div>
-    <div class="pk-body">
-      <div class="pk-vacancy">
-        <div class="pk-vacancy-num ${status}">${vacNum}</div>
-        <div class="pk-vacancy-label">個空位<br><strong>${cp.district_tc || ''}</strong></div>
+        <div class="pk-vacancy-num ${esc(status)}">${vacNum}</div>
+        <div class="pk-vacancy-label">個空位<br><strong>${esc(cp.district_tc || '')}</strong></div>
       </div>
       <div class="pk-meta">
         <div class="pk-meta-item">
           <div class="label">狀態</div>
-          <div class="value"><span class="pk-badge ${status}">${statusLabel}</span></div>
+          <div class="value"><span class="pk-badge ${esc(status)}">${esc(statusLabel)}</span></div>
         </div>
         <div class="pk-meta-item">
           <div class="label">高度限制</div>
-          <div class="value">${cp.height > 0 ? cp.height + 'm' : '無'}</div>
+          <div class="value">${esc(heightStr)}</div>
         </div>
       </div>
       <span class="pk-badge carpark">🏍️ 停車場</span>
     </div>`;
-}
+  }
 
-function updateStats() {
-  let green = 0, red = 0, gray = 0;
-  const all = [...carparkData, ...onstreetData];
-  all.forEach(cp => {
-    const s = getStatus(cp);
-    if (s === 'green') green++;
-    else if (s === 'red') red++;
-    else gray++;
-  });
-  const cpCount = carparkData.length, osCount = onstreetData.length;
-  document.getElementById('total-count').textContent = `${cpCount}停 + ${osCount}街上`;
-  document.getElementById('stat-green').textContent = green;
-  document.getElementById('stat-red').textContent = red;
-  document.getElementById('stat-gray').textContent = gray;
-}
+  // ── STATS ─────────────────────────────────────────────────
+  function updateStats() {
+    let green = 0, red = 0, gray = 0;
+    const all = [...carparkData, ...onstreetData];
+    all.forEach(cp => {
+      const s = getStatus(cp);
+      if      (s === 'green') green++;
+      else if (s === 'red')   red++;
+      else                    gray++;
+    });
+    const cpCount = carparkData.length;
+    const osCount = onstreetData.length;
+    document.getElementById('total-count').textContent = `${cpCount}停 + ${osCount}街上`;
+    document.getElementById('stat-green').textContent = green;
+    document.getElementById('stat-red').textContent   = red;
+    document.getElementById('stat-gray').textContent  = gray;
+  }
 
-function setupFilterPills() {
-  document.querySelectorAll('.filter-card .pill').forEach(pill => {
-    pill.onclick = () => {
-      document.querySelectorAll('.filter-card .pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      currentFilter = pill.dataset.v;
-      loadStopsInView();
-    };
-  });
-}
+  // ── UI HELPERS ────────────────────────────────────────────
+  function hideLoading() {
+    const el = document.getElementById('loading');
+    if (el) el.style.display = 'none';
+  }
 
-function setupTypePills() {
-  document.querySelectorAll('.type-pill').forEach(pill => {
-    pill.onclick = () => {
-      document.querySelectorAll('.type-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      currentType = pill.dataset.t;
-      loadStopsInView();
-    };
-  });
-}
+  function showLoadError(msg) {
+    const el = document.getElementById('loading');
+    if (el) {
+      el.style.display = 'flex';
+      el.querySelector('p').textContent = msg;
+    }
+  }
 
-init();
+  function setLoadingState(loading) {
+    isLoading = loading;
+    const btn = document.querySelector('.refresh-btn');
+    if (btn) {
+      btn.disabled = loading;
+      btn.textContent = loading ? '⏳ 載入中…' : '🔄 刷新';
+    }
+  }
+
+  // ── EVENT SETUP ────────────────────────────────────────────
+  function setupFilterPills() {
+    document.querySelectorAll('.filter-card .pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.filter-card .pill')
+          .forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        currentFilter = pill.dataset.v;
+        loadStopsInView();
+      });
+    });
+  }
+
+  function setupTypePills() {
+    document.querySelectorAll('.type-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.type-pill')
+          .forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        currentType = pill.dataset.t;
+        loadStopsInView();
+      });
+    });
+  }
+
+  function setupRefreshButton() {
+    const btn = document.querySelector('.refresh-btn');
+    if (btn) {
+      // Remove old inline onclick to avoid double-firing
+      btn.removeAttribute('onclick');
+      btn.addEventListener('click', () => {
+        if (!isLoading) loadData();
+      });
+    }
+  }
+
+  // ── BOOT ──────────────────────────────────────────────────
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
 </script>
 </body>
 </html>
