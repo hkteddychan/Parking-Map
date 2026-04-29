@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>香港停車場空位地圖</title>
+<title>香港停車場及街上泊位地圖</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,16 +28,9 @@
   .header-card h1 span { font-size: 22px; }
   .header-card p { font-size: 12px; color: #888; margin-top: 4px; }
 
-  .stats-bar {
-    display: flex; gap: 8px; margin-top: 8px;
-  }
-  .stat-item {
-    flex: 1; background: #f5f5f5; border-radius: 8px;
-    padding: 6px 8px; text-align: center;
-  }
-  .stat-item .num {
-    font-size: 20px; font-weight: 900;
-  }
+  .stats-bar { display: flex; gap: 8px; margin-top: 8px; }
+  .stat-item { flex: 1; background: #f5f5f5; border-radius: 8px; padding: 6px 8px; text-align: center; }
+  .stat-item .num { font-size: 20px; font-weight: 900; }
   .stat-item .label { font-size: 10px; color: #888; margin-top: 1px; }
   .stat-green .num { color: #27ae60; }
   .stat-red .num { color: #e74c3c; }
@@ -62,6 +55,22 @@
   .pill[data-v=gray].active { background: #95a5a6; }
   .pill[data-v=all].active { background: #3498db; }
 
+  .type-card {
+    background: white; border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    padding: 10px 12px;
+  }
+  .type-pills { display: flex; gap: 5px; }
+  .type-pill {
+    flex: 1; padding: 6px 8px; border-radius: 8px; font-size: 12px; font-weight: 700;
+    text-align: center; cursor: pointer; transition: all 0.2s;
+    border: 2px solid transparent; background: #f0f0f0; color: #888;
+  }
+  .type-pill.active { border-color: currentColor; }
+  .type-pill[data-t=carpark].active { background: #e8f5e9; color: #2e7d32; }
+  .type-pill[data-t=onstreet].active { background: #fff3e0; color: #e65100; }
+  .type-pill[data-t=both].active { background: #e3f2fd; color: #1565c0; }
+
   .refresh-card {
     background: white; border-radius: 12px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.18);
@@ -69,77 +78,74 @@
   }
   .refresh-btn {
     background: #3498db; color: white; border: none;
-    padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600;
-    cursor: pointer;
+    padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
   }
   .refresh-btn:hover { background: #2980b9; }
   .last-update { font-size: 11px; color: #aaa; }
 
-  /* Parking marker */
-  .park-icon {
+  /* Car park marker */
+  .pk-icon {
     width: 36px !important; height: 36px !important;
   }
-  .park-icon-inner {
+  .pk-icon-inner {
     width: 36px; height: 36px; border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 900; color: white;
+    font-size: 11px; font-weight: 900; color: white;
     box-shadow: 0 3px 8px rgba(0,0,0,0.35);
     border: 3px solid rgba(255,255,255,0.8);
     position: relative; overflow: hidden;
   }
-  .park-icon-inner::before {
+  .pk-icon-inner::before {
     content: 'P'; font-size: 18px; font-weight: 900;
     color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.4);
     position: relative; z-index: 1;
   }
-  .park-icon-inner.full { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-  .park-icon-inner.available { background: linear-gradient(135deg, #27ae60, #1e8449); }
-  .park-icon-inner.unknown { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
-  .park-icon-inner::after {
+  .pk-icon-inner::after {
     content: ''; position: absolute; top: 3px; left: 3px; right: 3px; height: 10px;
     background: rgba(255,255,255,0.3); border-radius: 4px 4px 0 0;
   }
+  .pk-icon-inner.green { background: linear-gradient(135deg, #27ae60, #1e8449); }
+  .pk-icon-inner.red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+  .pk-icon-inner.gray { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
+
+  /* On-street marker - smaller diamond */
+  .os-icon {
+    width: 20px !important; height: 20px !important;
+  }
+  .os-icon-inner {
+    width: 20px; height: 20px; border-radius: 4px;
+    transform: rotate(45deg);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+    border: 2px solid rgba(255,255,255,0.8);
+  }
+  .os-icon-inner.green { background: #27ae60; }
+  .os-icon-inner.red { background: #e74c3c; }
+  .os-icon-inner.gray { background: #95a5a6; }
 
   /* Popup */
-  .pk-popup .leaflet-popup-content-wrapper {
-    border-radius: 12px; padding: 0;
-  }
-  .pk-popup .leaflet-popup-content {
-    margin: 0; min-width: 240px;
-  }
-  .pk-header {
-    padding: 14px 14px 10px;
-    border-bottom: 1px solid #eee;
-  }
+  .pk-popup .leaflet-popup-content-wrapper { border-radius: 12px; padding: 0; }
+  .pk-popup .leaflet-popup-content { margin: 0; min-width: 240px; }
+  .pk-header { padding: 14px 14px 10px; border-bottom: 1px solid #eee; }
   .pk-name { font-size: 15px; font-weight: 700; color: #222; }
   .pk-addr { font-size: 12px; color: #888; margin-top: 3px; }
   .pk-body { padding: 10px 14px 12px; }
-  .pk-vacancy {
-    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
-  }
-  .pk-vacancy-num {
-    font-size: 36px; font-weight: 900; line-height: 1;
-  }
+  .pk-vacancy { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .pk-vacancy-num { font-size: 36px; font-weight: 900; line-height: 1; }
   .pk-vacancy-num.green { color: #27ae60; }
   .pk-vacancy-num.red { color: #e74c3c; }
   .pk-vacancy-num.gray { color: #95a5a6; }
   .pk-vacancy-label { font-size: 13px; color: #888; }
   .pk-vacancy-label strong { color: #333; font-size: 15px; }
-  .pk-meta {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
-  }
-  .pk-meta-item {
-    background: #f5f5f5; border-radius: 8px; padding: 7px 10px;
-  }
+  .pk-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .pk-meta-item { background: #f5f5f5; border-radius: 8px; padding: 7px 10px; }
   .pk-meta-item .label { font-size: 10px; color: #aaa; }
   .pk-meta-item .value { font-size: 13px; font-weight: 700; color: #333; margin-top: 1px; }
-  .pk-status-badge {
-    display: inline-block; padding: 2px 8px; border-radius: 10px;
-    font-size: 11px; font-weight: 700; margin-top: 6px;
-  }
-  .pk-status-badge.available { background: #d4efdf; color: #1e8449; }
-  .pk-status-badge.full { background: #fadbd8; color: #c0392b; }
-  .pk-status-badge.unknown { background: #f0f0f0; color: #7f8c8d; }
+  .pk-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; margin-top: 4px; }
+  .pk-badge.carpark { background: #e8f5e9; color: #2e7d32; }
+  .pk-badge.onstreet { background: #fff3e0; color: #e65100; }
+  .pk-badge.available { background: #d4efdf; color: #1e8449; }
+  .pk-badge.full { background: #fadbd8; color: #c0392b; }
+  .pk-badge.unknown { background: #f0f0f0; color: #7f8c8d; }
   .pk-lastupdate { font-size: 10px; color: #bbb; margin-top: 6px; }
   .leaflet-popup-tip { display: none; }
 
@@ -151,21 +157,20 @@
   }
   .legend-title { font-size: 11px; color: #999; font-weight: 600; margin-bottom: 6px; }
   .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #555; margin-bottom: 4px; }
-  .legend-dot { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
-  .legend-dot.green { background: #27ae60; }
-  .legend-dot.red { background: #e74c3c; }
-  .legend-dot.gray { background: #95a5a6; }
+  .legend-p { width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; color: white; flex-shrink: 0; }
+  .legend-d { width: 14px; height: 14px; border-radius: 2px; transform: rotate(45deg); flex-shrink: 0; }
+  .legend-p.green { background: #27ae60; }
+  .legend-p.red { background: #e74c3c; }
+  .legend-p.gray { background: #95a5a6; }
+  .legend-d.green { background: #27ae60; }
+  .legend-d.red { background: #e74c3c; }
+  .legend-d.gray { background: #95a5a6; }
 
   #loading {
     position: fixed; inset: 0; background: rgba(255,255,255,0.95);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    z-index: 9999;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;
   }
-  #loading .spinner {
-    width: 40px; height: 40px; border: 4px solid #e0e0e0;
-    border-top-color: #3498db; border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
+  #loading .spinner { width: 40px; height: 40px; border: 4px solid #e0e0e0; border-top-color: #3498db; border-radius: 50%; animation: spin 0.8s linear infinite; }
   #loading p { margin-top: 14px; font-size: 15px; color: #666; }
   @keyframes spin { to { transform: rotate(360deg); } }
 </style>
@@ -174,36 +179,36 @@
 
 <div id="loading">
   <div class="spinner"></div>
-  <p>正在載入停車場數據...</p>
+  <p>正在載入泊位數據...</p>
 </div>
 
 <div id="map"></div>
 
 <div class="controls">
   <div class="header-card">
-    <h1>🚗 <span>香港停車場空位</span></h1>
-    <p>運輸署實時數據 · <span id="total-count">--</span> 個停車場</p>
+    <h1>🚗 <span>香港泊位地圖</span></h1>
+    <p>運輸署實時數據 · <span id="total-count">--</span> 個泊位</p>
     <div class="stats-bar">
-      <div class="stat-item stat-green">
-        <div class="num" id="stat-green">--</div>
-        <div class="label">有位</div>
-      </div>
-      <div class="stat-item stat-red">
-        <div class="num" id="stat-red">--</div>
-        <div class="label">已滿</div>
-      </div>
-      <div class="stat-item stat-gray">
-        <div class="num" id="stat-gray">--</div>
-        <div class="label">無數據</div>
-      </div>
+      <div class="stat-item stat-green"><div class="num" id="stat-green">--</div><div class="label">有空位</div></div>
+      <div class="stat-item stat-red"><div class="num" id="stat-red">--</div><div class="label">已佔用/滿</div></div>
+      <div class="stat-item stat-gray"><div class="num" id="stat-gray">--</div><div class="label">無數據</div></div>
+    </div>
+  </div>
+
+  <div class="type-card">
+    <div class="filter-label">泊位類型</div>
+    <div class="type-pills">
+      <div class="type-pill active" data-t="both">全部</div>
+      <div class="type-pill" data-t="carpark">🏍️ 停車場</div>
+      <div class="type-pill" data-t="onstreet">📍 街上感應泊位</div>
     </div>
   </div>
 
   <div class="filter-card">
-    <div class="filter-label">顯示篩選</div>
+    <div class="filter-label">狀態篩選</div>
     <div class="filter-pills">
       <div class="pill active" data-v="all">全部</div>
-      <div class="pill" data-v="green">有位</div>
+      <div class="pill" data-v="green">有空位</div>
       <div class="pill" data-v="red">已滿</div>
       <div class="pill" data-v="gray">無數據</div>
     </div>
@@ -217,9 +222,12 @@
 
 <div class="legend-card">
   <div class="legend-title">圖例</div>
-  <div class="legend-item"><div class="legend-dot green"></div>有空位</div>
-  <div class="legend-item"><div class="legend-dot red"></div>已滿</div>
-  <div class="legend-item"><div class="legend-dot gray"></div>無數據</div>
+  <div class="legend-item"><div class="legend-p green">P</div>停車場·有空位</div>
+  <div class="legend-item"><div class="legend-p red">P</div>停車場·已滿</div>
+  <div class="legend-item"><div class="legend-p gray">P</div>停車場·無數據</div>
+  <div class="legend-item"><div class="legend-d green"></div>街上泊位·空</div>
+  <div class="legend-item"><div class="legend-d red"></div>街上泊位·佔用</div>
+  <div class="legend-item"><div class="legend-d gray"></div>街上泊位·不可用</div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -228,32 +236,45 @@
 const HK_CENTER = [22.3193, 114.1694];
 const DEFAULT_ZOOM = 12;
 const DATA_URLS = {
-  basic: 'https://resource.data.one.gov.hk/td/carpark/basic_info_all.json',
-  vacancy: 'https://resource.data.one.gov.hk/td/carpark/vacancy_all.json'
+  carpark_basic: 'https://resource.data.one.gov.hk/td/carpark/basic_info_all.json',
+  carpark_vacancy: 'https://resource.data.one.gov.hk/td/carpark/vacancy_all.json',
+  onstreet_space: 'https://data.nmospiot.gov.hk/api/pvds/Download/parkingspace',
+  onstreet_occ: 'https://data.nmospiot.gov.hk/api/pvds/Download/occupancystatus'
 };
 
 // ============ STATE ============
 let map, markers = [];
-let carparkData = [];
-let vacIndex = {};
+let carparkData = [], onstreetData = [];
 let currentFilter = 'all';
+let currentType = 'both';
 let lastUpdateTime = null;
 
-// ============ COLORS ============
+// ============ STATUS ============
 function getStatus(cp) {
+  if (cp.type === 'onstreet') {
+    if (cp.status === 'V') return 'green';
+    if (cp.status === 'O') return 'red';
+    return 'gray';
+  }
+  // carpark
   const v = cp.vacancy;
-  if (v === null || v === undefined || v < 0) return 'gray';  // no data
-  if (v === 0) return 'red';  // full
-  return 'green';  // available
+  if (v === null || v === undefined || v < 0) return 'gray';
+  if (v === 0) return 'red';
+  return 'green';
 }
-function getColor(status) {
-  return { green: '#27ae60', red: '#e74c3c', gray: '#95a5a6' }[status];
-}
-function getIcon(status) {
-  const cls = status === 'green' ? 'available' : status === 'red' ? 'full' : 'unknown';
+
+function getIcon(cp, status) {
+  if (cp.type === 'onstreet') {
+    const cls = status;
+    return L.divIcon({
+      html: `<div class="os-icon-inner ${cls}"></div>`,
+      className: 'os-icon', iconSize: [20, 20], iconAnchor: [10, 10], popupAnchor: [0, -8]
+    });
+  }
+  const cls = status;
   return L.divIcon({
-    html: `<div class="park-icon-inner ${cls}"></div>`,
-    className: 'park-icon', iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -14]
+    html: `<div class="pk-icon-inner ${cls}"></div>`,
+    className: 'pk-icon', iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -14]
   });
 }
 
@@ -264,44 +285,91 @@ async function init() {
     attribution: '© OpenStreetMap © CARTO', maxZoom: 19
   }).addTo(map);
 
-  // District boundary layer (simple circles for now)
   map.on('moveend', loadStopsInView);
   map.on('zoomend', loadStopsInView);
 
-  await loadData();
   setupFilterPills();
+  setupTypePills();
+  await loadData();
   document.getElementById('loading').style.display = 'none';
 }
 
 // ============ DATA ============
 async function loadData() {
   try {
-    const [basicRes, vacRes] = await Promise.all([
-      fetch(DATA_URLS.basic), fetch(DATA_URLS.vacancy)
+    // Car parks
+    const [cpBasic, cpVac, osSpace, osOcc] = await Promise.all([
+      fetch(DATA_URLS.carpark_basic).then(r => r.json()),
+      fetch(DATA_URLS.carpark_vacancy).then(r => r.json()),
+      fetch(DATA_URLS.onstreet_space).then(r => r.text()),
+      fetch(DATA_URLS.onstreet_occ).then(r => r.text())
     ]);
-    const basic = (await basicRes.json()).car_park;
-    const vac = (await vacRes.json()).car_park;
 
-    vacIndex = {};
-    vac.forEach(cp => { vacIndex[cp.park_id] = cp; });
+    // Parse onstreet CSVs (skip first line which is a date)
+    const osLines = osSpace.trim().split('\n');
+    const osHeaderIdx = osLines.findIndex(l => l.startsWith('FeatureID'));
+    const osReader = osLines.slice(osHeaderIdx).join('\n');
+    const osParser = osLines.slice(osHeaderIdx + 1).map(l => {
+      const vals = l.split(',');
+      const h = osLines[osHeaderIdx].split(',');
+      const obj = {};
+      h.forEach((k, i) => { obj[k.trim()] = (vals[i] || '').trim(); });
+      return obj;
+    });
 
-    carparkData = basic.map(cp => {
+    const occLines = osOcc.trim().split('\n');
+    const occHeaderIdx = occLines.findIndex(l => l.startsWith('FeatureID'));
+    const occMap = {};
+    occLines.slice(occHeaderIdx + 1).forEach(l => {
+      const vals = l.split(',');
+      const h = occLines[occHeaderIdx].split(',');
+      const obj = {};
+      h.forEach((k, i) => { obj[k.trim()] = (vals[i] || '').trim(); });
+      if (obj.ParkingSpaceId) occMap[obj.ParkingSpaceId] = obj;
+    });
+
+    // Index car park vacancy
+    const vacIndex = {};
+    (cpVac.car_park || []).forEach(cp => { vacIndex[cp.park_id] = cp; });
+
+    // Build carpark list
+    carparkData = (cpBasic.car_park || []).map(cp => {
       const v = vacIndex[cp.park_id];
       let vacancy = null;
       if (v) {
         for (const vt of v.vehicle_type || []) {
           if (vt.type === 'P') {
             for (const sc of vt.service_category || []) {
-              if (sc.category === 'HOURLY') {
-                vacancy = sc.vacancy;
-                break;
-              }
+              if (sc.category === 'HOURLY') { vacancy = sc.vacancy; break; }
             }
           }
         }
       }
-      return { ...cp, vacancy };
+      return { ...cp, vacancy, type: 'carpark', status: null };
     });
+
+    // Build onstreet list
+    onstreetData = osParser.map(s => {
+      const occ = occMap[s.ParkingSpaceId] || {};
+      const status = occ.OccupancyStatus || 'NU';
+      return {
+        park_id: `osm_${s.ParkingSpaceId}`,
+        name_tc: s.SectionOfStreet_tc || s.Street_tc || s.ParkingSpaceId,
+        name_en: s.SectionOfStreet || s.Street || s.ParkingSpaceId,
+        address_tc: s.SectionOfStreet_tc || s.Street_tc || '',
+        address_en: s.SectionOfStreet || s.Street || '',
+        latitude: parseFloat(s.Latitude),
+        longitude: parseFloat(s.Longitude),
+        district_tc: s.District_tc || '',
+        district_en: s.District || '',
+        region_tc: s.Region_tc || '',
+        vacancy: status === 'V' ? 1 : (status === 'O' ? 0 : null),
+        status,
+        type: 'onstreet',
+        last_change: occ.OccupancyDateChanged || '',
+        vehicle_type: s.VehicleType
+      };
+    }).filter(s => s.latitude && s.longitude);
 
     lastUpdateTime = new Date();
     document.getElementById('last-update').textContent =
@@ -328,7 +396,10 @@ function loadStopsInView() {
   markers.forEach(m => map.removeLayer(m));
   markers = [];
 
-  carparkData.forEach(cp => {
+  const all = currentType === 'both' ? [...carparkData, ...onstreetData]
+    : currentType === 'carpark' ? carparkData : onstreetData;
+
+  all.forEach(cp => {
     const lat = parseFloat(cp.latitude), lng = parseFloat(cp.longitude);
     if (!lat || !lng) return;
     if (!bounds.contains([lat, lng])) return;
@@ -336,7 +407,7 @@ function loadStopsInView() {
     const status = getStatus(cp);
     if (currentFilter !== 'all' && status !== currentFilter) return;
 
-    const m = L.marker([lat, lng], { icon: getIcon(status) });
+    const m = L.marker([lat, lng], { icon: getIcon(cp, status) });
     m.bindPopup(createPopup(cp, status), { className: 'pk-popup', maxWidth: 300 });
     m.addTo(map);
     markers.push(m);
@@ -344,11 +415,27 @@ function loadStopsInView() {
 }
 
 function createPopup(cp, status) {
-  const v = cp.vacancy;
-  const statusLabel = status === 'green' ? '有空位' : status === 'red' ? '已滿' : '無數據';
-  const vacNum = v !== null && v >= 0 ? v : '--';
-  const lastUp = cp.vacancy_lastupdate || '';
+  const typeLabel = cp.type === 'carpark' ? '停車場' : '街上感應泊位';
+  const statusLabel = status === 'green' ? '有空位' : status === 'red' ? '已滿/已佔用' : '無數據';
 
+  if (cp.type === 'onstreet') {
+    return `
+    <div class="pk-header">
+      <div class="pk-name">${cp.name_tc || cp.name_en}</div>
+      <div class="pk-addr">${cp.address_tc || cp.address_en}</div>
+    </div>
+    <div class="pk-body">
+      <div class="pk-vacancy">
+        <div class="pk-vacancy-num ${status}">${cp.status === 'V' ? '✓' : cp.status === 'O' ? '✗' : '?'}</div>
+        <div class="pk-vacancy-label"><strong>${cp.status === 'V' ? '空置' : cp.status === 'O' ? '已被佔用' : '不可用'}</strong><br>${cp.district_tc || ''}</div>
+      </div>
+      <span class="pk-badge onstreet">📍 街上感應泊位</span>
+      ${cp.last_change ? `<div class="pk-lastupdate">更新: ${cp.last_change}</div>` : ''}
+    </div>`;
+  }
+
+  const v = cp.vacancy;
+  const vacNum = v !== null && v >= 0 ? v : '--';
   return `
     <div class="pk-header">
       <div class="pk-name">${cp.name_tc || cp.name_en}</div>
@@ -362,44 +449,37 @@ function createPopup(cp, status) {
       <div class="pk-meta">
         <div class="pk-meta-item">
           <div class="label">狀態</div>
-          <div class="value"><span class="pk-status-badge ${status}">${statusLabel}</span></div>
+          <div class="value"><span class="pk-badge ${status}">${statusLabel}</span></div>
         </div>
         <div class="pk-meta-item">
           <div class="label">高度限制</div>
           <div class="value">${cp.height > 0 ? cp.height + 'm' : '無'}</div>
         </div>
-        ${cp.contactNo ? `
-        <div class="pk-meta-item">
-          <div class="label">電話</div>
-          <div class="value">${cp.contactNo}</div>
-        </div>` : ''}
-        <div class="pk-meta-item">
-          <div class="label">資料更新</div>
-          <div class="value">${cp.vacancy_lastupdate ? cp.vacancy_lastupdate.split(' ')[1]?.slice(0,5) || cp.vacancy_lastupdate : '--'}</div>
-        </div>
       </div>
-    </div>
-  `;
+      <span class="pk-badge carpark">🏍️ 停車場</span>
+    </div>`;
 }
 
 function updateStats() {
-  document.getElementById('total-count').textContent = carparkData.length;
   let green = 0, red = 0, gray = 0;
-  carparkData.forEach(cp => {
+  const all = [...carparkData, ...onstreetData];
+  all.forEach(cp => {
     const s = getStatus(cp);
     if (s === 'green') green++;
     else if (s === 'red') red++;
     else gray++;
   });
+  const cpCount = carparkData.length, osCount = onstreetData.length;
+  document.getElementById('total-count').textContent = `${cpCount}停車場 + ${osCount}街上`;
   document.getElementById('stat-green').textContent = green;
   document.getElementById('stat-red').textContent = red;
   document.getElementById('stat-gray').textContent = gray;
 }
 
 function setupFilterPills() {
-  document.querySelectorAll('.pill').forEach(pill => {
+  document.querySelectorAll('.filter-card .pill').forEach(pill => {
     pill.onclick = () => {
-      document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.filter-card .pill').forEach(p => p.classList.remove('active'));
       pill.classList.add('active');
       currentFilter = pill.dataset.v;
       loadStopsInView();
@@ -407,9 +487,18 @@ function setupFilterPills() {
   });
 }
 
-// Auto-refresh every 30s
-setInterval(refreshData, 30000);
+function setupTypePills() {
+  document.querySelectorAll('.type-pill').forEach(pill => {
+    pill.onclick = () => {
+      document.querySelectorAll('.type-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentType = pill.dataset.t;
+      loadStopsInView();
+    };
+  });
+}
 
+setInterval(refreshData, 30000);
 init();
 </script>
 </body>
