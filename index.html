@@ -35,36 +35,27 @@
   .stat-green .num { color: #27ae60; }
   .stat-red .num { color: #e74c3c; }
   .stat-gray .num { color: #95a5a6; }
-  .stat-total .num { color: #3498db; }
 
-  .filter-card {
+  .filter-card, .type-card {
     background: white; border-radius: 12px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.18);
     padding: 10px 12px;
   }
   .filter-label { font-size: 11px; color: #999; font-weight: 600; margin-bottom: 6px; }
-  .filter-pills { display: flex; gap: 5px; flex-wrap: wrap; }
-  .pill {
+  .filter-pills, .type-pills { display: flex; gap: 5px; flex-wrap: wrap; }
+  .pill, .type-pill {
     padding: 4px 10px; border-radius: 14px; font-size: 12px; font-weight: 600;
     border: 2px solid transparent; cursor: pointer; transition: all 0.2s;
     background: #f0f0f0; color: #666;
   }
-  .pill.active { color: white; }
+  .pill.active, .type-pill.active { color: white; }
   .pill[data-v=green].active { background: #27ae60; }
   .pill[data-v=red].active { background: #e74c3c; }
   .pill[data-v=gray].active { background: #95a5a6; }
   .pill[data-v=all].active { background: #3498db; }
-
-  .type-card {
-    background: white; border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
-    padding: 10px 12px;
-  }
-  .type-pills { display: flex; gap: 5px; }
   .type-pill {
     flex: 1; padding: 6px 8px; border-radius: 8px; font-size: 12px; font-weight: 700;
-    text-align: center; cursor: pointer; transition: all 0.2s;
-    border: 2px solid transparent; background: #f0f0f0; color: #888;
+    text-align: center; border: 2px solid transparent; background: #f0f0f0; color: #888;
   }
   .type-pill.active { border-color: currentColor; }
   .type-pill[data-t=carpark].active { background: #e8f5e9; color: #2e7d32; }
@@ -84,21 +75,15 @@
   .last-update { font-size: 11px; color: #aaa; }
 
   /* Car park marker */
-  .pk-icon {
-    width: 36px !important; height: 36px !important;
-  }
+  .pk-icon { width: 36px !important; height: 36px !important; }
   .pk-icon-inner {
     width: 36px; height: 36px; border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 900; color: white;
     box-shadow: 0 3px 8px rgba(0,0,0,0.35);
     border: 3px solid rgba(255,255,255,0.8);
     position: relative; overflow: hidden;
-  }
-  .pk-icon-inner::before {
-    content: 'P'; font-size: 18px; font-weight: 900;
-    color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.4);
-    position: relative; z-index: 1;
+    font-size: 18px; font-weight: 900; color: white;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
   }
   .pk-icon-inner::after {
     content: ''; position: absolute; top: 3px; left: 3px; right: 3px; height: 10px;
@@ -108,10 +93,8 @@
   .pk-icon-inner.red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
   .pk-icon-inner.gray { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
 
-  /* On-street marker - smaller diamond */
-  .os-icon {
-    width: 20px !important; height: 20px !important;
-  }
+  /* On-street marker */
+  .os-icon { width: 20px !important; height: 20px !important; }
   .os-icon-inner {
     width: 20px; height: 20px; border-radius: 4px;
     transform: rotate(45deg);
@@ -123,7 +106,7 @@
   .os-icon-inner.gray { background: #95a5a6; }
 
   /* Popup */
-  .pk-popup .leaflet-popup-content-wrapper { border-radius: 12px; padding: 0; }
+  .pk-popup .leaflet-popup-content-wrapper { border-radius: 12px; padding: 0; overflow: hidden; }
   .pk-popup .leaflet-popup-content { margin: 0; min-width: 240px; }
   .pk-header { padding: 14px 14px 10px; border-bottom: 1px solid #eee; }
   .pk-name { font-size: 15px; font-weight: 700; color: #222; }
@@ -143,9 +126,9 @@
   .pk-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; margin-top: 4px; }
   .pk-badge.carpark { background: #e8f5e9; color: #2e7d32; }
   .pk-badge.onstreet { background: #fff3e0; color: #e65100; }
-  .pk-badge.available { background: #d4efdf; color: #1e8449; }
-  .pk-badge.full { background: #fadbd8; color: #c0392b; }
-  .pk-badge.unknown { background: #f0f0f0; color: #7f8c8d; }
+  .pk-badge.green { background: #d4efdf; color: #1e8449; }
+  .pk-badge.red { background: #fadbd8; color: #c0392b; }
+  .pk-badge.gray { background: #f0f0f0; color: #7f8c8d; }
   .pk-lastupdate { font-size: 10px; color: #bbb; margin-top: 6px; }
   .leaflet-popup-tip { display: none; }
 
@@ -215,7 +198,7 @@
   </div>
 
   <div class="refresh-card">
-    <button class="refresh-btn" onclick="refreshData()">🔄 刷新</button>
+    <button class="refresh-btn" onclick="location.reload()">🔄 刷新</button>
     <span class="last-update" id="last-update">--</span>
   </div>
 </div>
@@ -235,19 +218,12 @@
 // ============ CONFIG ============
 const HK_CENTER = [22.3193, 114.1694];
 const DEFAULT_ZOOM = 12;
-const DATA_URLS = {
-  carpark_basic: 'https://resource.data.one.gov.hk/td/carpark/basic_info_all.json',
-  carpark_vacancy: 'https://resource.data.one.gov.hk/td/carpark/vacancy_all.json',
-  onstreet_space: 'https://data.nmospiot.gov.hk/api/pvds/Download/parkingspace',
-  onstreet_occ: 'https://data.nmospiot.gov.hk/api/pvds/Download/occupancystatus'
-};
 
 // ============ STATE ============
 let map, markers = [];
 let carparkData = [], onstreetData = [];
 let currentFilter = 'all';
 let currentType = 'both';
-let lastUpdateTime = null;
 
 // ============ STATUS ============
 function getStatus(cp) {
@@ -256,7 +232,6 @@ function getStatus(cp) {
     if (cp.status === 'O') return 'red';
     return 'gray';
   }
-  // carpark
   const v = cp.vacancy;
   if (v === null || v === undefined || v < 0) return 'gray';
   if (v === 0) return 'red';
@@ -264,16 +239,15 @@ function getStatus(cp) {
 }
 
 function getIcon(cp, status) {
+  const cls = status;
   if (cp.type === 'onstreet') {
-    const cls = status;
     return L.divIcon({
       html: `<div class="os-icon-inner ${cls}"></div>`,
       className: 'os-icon', iconSize: [20, 20], iconAnchor: [10, 10], popupAnchor: [0, -8]
     });
   }
-  const cls = status;
   return L.divIcon({
-    html: `<div class="pk-icon-inner ${cls}"></div>`,
+    html: `<div class="pk-icon-inner ${cls}">P</div>`,
     className: 'pk-icon', iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -14]
   });
 }
@@ -297,118 +271,23 @@ async function init() {
 // ============ DATA ============
 async function loadData() {
   try {
-    // Car parks
-    const [cpBasic, cpVac, osSpace, osOcc] = await Promise.all([
-      fetch(DATA_URLS.carpark_basic).then(r => r.json()),
-      fetch(DATA_URLS.carpark_vacancy).then(r => r.json()),
-      fetch(DATA_URLS.onstreet_space).then(r => r.text()),
-      fetch(DATA_URLS.onstreet_occ).then(r => r.text())
-    ]);
+    // Load from local JSON file (pre-merged, no CORS issues)
+    const res = await fetch('parking-data.json');
+    const data = await res.json();
 
-    // Parse onstreet CSVs
-    // Spaces CSV format: Line 0 = date, Line 1 = empty, Line 2 = header, Line 3+ = data
-    const osLines = osSpace.trim().split('\n');
-    const osHeaderLine = osLines.find(l => l.startsWith('FeatureID'));
-    const osHeaderIdx = osLines.indexOf(osHeaderLine);
-    const occLines = osOcc.trim().split('\n');
-    const occHeaderLine = occLines.find(l => l.startsWith('FeatureID'));
-    const occHeaderIdx = occLines.indexOf(occHeaderLine);
+    carparkData = (data.car_parks || []).map(cp => ({ ...cp, type: 'carpark' }));
+    onstreetData = (data.onstreet || []).map(os => ({ ...os, type: 'onstreet' }));
 
-    // Build occupancy lookup first
-    const occMap = {};
-    for (let i = occHeaderIdx + 1; i < occLines.length; i++) {
-      const vals = occLines[i].split(',');
-      const h = occLines[occHeaderIdx].split(',');
-      if (vals.length < h.length) continue;
-      const obj = {};
-      h.forEach((k, j) => { obj[k.trim()] = (vals[j] || '').trim(); });
-      if (obj.ParkingSpaceId) occMap[obj.ParkingSpaceId] = obj;
-    }
-
-    // Build spaces list using proper CSV parsing (handle quoted fields)
-    function parseCSVLine(line) {
-      const result = [], curr = [];
-      let inQuotes = false;
-      for (let i = 0; i < line.length; i++) {
-        const ch = line[i];
-        if (ch === '"') { inQuotes = !inQuotes; }
-        else if (ch === ',' && !inQuotes) { result.push(curr.join('').trim()); curr.length = 0; }
-        else curr.push(ch);
-      }
-      result.push(curr.join('').trim());
-      return result;
-    }
-
-    const osHeader = parseCSVLine(osLines[osHeaderIdx]);
-    const osParser = [];
-    for (let i = osHeaderIdx + 1; i < osLines.length; i++) {
-      if (!osLines[i].trim()) continue;
-      const vals = parseCSVLine(osLines[i]);
-      const obj = {};
-      osHeader.forEach((k, j) => { obj[k.trim()] = (vals[j] || '').trim(); });
-      osParser.push(obj);
-    }
-
-    // Index car park vacancy
-    const vacIndex = {};
-    (cpVac.car_park || []).forEach(cp => { vacIndex[cp.park_id] = cp; });
-
-    // Build carpark list
-    carparkData = (cpBasic.car_park || []).map(cp => {
-      const v = vacIndex[cp.park_id];
-      let vacancy = null;
-      if (v) {
-        for (const vt of v.vehicle_type || []) {
-          if (vt.type === 'P') {
-            for (const sc of vt.service_category || []) {
-              if (sc.category === 'HOURLY') { vacancy = sc.vacancy; break; }
-            }
-          }
-        }
-      }
-      return { ...cp, vacancy, type: 'carpark', status: null };
-    });
-
-    // Build onstreet list
-    onstreetData = osParser.map(s => {
-      const occ = occMap[s.ParkingSpaceId] || {};
-      const status = occ.OccupancyStatus || 'NU';
-      return {
-        park_id: `osm_${s.ParkingSpaceId}`,
-        name_tc: s.SectionOfStreet_tc || s.Street_tc || s.ParkingSpaceId,
-        name_en: s.SectionOfStreet || s.Street || s.ParkingSpaceId,
-        address_tc: s.SectionOfStreet_tc || s.Street_tc || '',
-        address_en: s.SectionOfStreet || s.Street || '',
-        latitude: parseFloat(s.Latitude),
-        longitude: parseFloat(s.Longitude),
-        district_tc: s.District_tc || '',
-        district_en: s.District || '',
-        region_tc: s.Region_tc || '',
-        vacancy: status === 'V' ? 1 : (status === 'O' ? 0 : null),
-        status,
-        type: 'onstreet',
-        last_change: occ.OccupancyDateChanged || '',
-        vehicle_type: s.VehicleType
-      };
-    }).filter(s => s.latitude && s.longitude);
-
-    lastUpdateTime = new Date();
+    const now = new Date();
     document.getElementById('last-update').textContent =
-      `更新: ${lastUpdateTime.getHours().toString().padStart(2,'0')}:${lastUpdateTime.getMinutes().toString().padStart(2,'0')}:${lastUpdateTime.getSeconds().toString().padStart(2,'0')}`;
+      `更新: ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
 
     updateStats();
     loadStopsInView();
   } catch (e) {
-    console.error(e);
+    console.error('Load error:', e);
     document.querySelector('#loading p').textContent = '載入失敗，請刷新';
   }
-}
-
-async function refreshData() {
-  document.getElementById('last-update').textContent = '更新中...';
-  markers.forEach(m => map.removeLayer(m));
-  markers = [];
-  await loadData();
 }
 
 // ============ RENDER ============
@@ -436,10 +315,9 @@ function loadStopsInView() {
 }
 
 function createPopup(cp, status) {
-  const typeLabel = cp.type === 'carpark' ? '停車場' : '街上感應泊位';
-  const statusLabel = status === 'green' ? '有空位' : status === 'red' ? '已滿/已佔用' : '無數據';
-
   if (cp.type === 'onstreet') {
+    const statusText = cp.status === 'V' ? '空置' : cp.status === 'O' ? '已被佔用' : '不可用';
+    const icon = cp.status === 'V' ? '✓' : cp.status === 'O' ? '✗' : '?';
     return `
     <div class="pk-header">
       <div class="pk-name">${cp.name_tc || cp.name_en}</div>
@@ -447,8 +325,8 @@ function createPopup(cp, status) {
     </div>
     <div class="pk-body">
       <div class="pk-vacancy">
-        <div class="pk-vacancy-num ${status}">${cp.status === 'V' ? '✓' : cp.status === 'O' ? '✗' : '?'}</div>
-        <div class="pk-vacancy-label"><strong>${cp.status === 'V' ? '空置' : cp.status === 'O' ? '已被佔用' : '不可用'}</strong><br>${cp.district_tc || ''}</div>
+        <div class="pk-vacancy-num ${status}">${icon}</div>
+        <div class="pk-vacancy-label"><strong>${statusText}</strong><br>${cp.district_tc || ''}</div>
       </div>
       <span class="pk-badge onstreet">📍 街上感應泊位</span>
       ${cp.last_change ? `<div class="pk-lastupdate">更新: ${cp.last_change}</div>` : ''}
@@ -457,6 +335,7 @@ function createPopup(cp, status) {
 
   const v = cp.vacancy;
   const vacNum = v !== null && v >= 0 ? v : '--';
+  const statusLabel = status === 'green' ? '有空位' : status === 'red' ? '已滿' : '無數據';
   return `
     <div class="pk-header">
       <div class="pk-name">${cp.name_tc || cp.name_en}</div>
@@ -491,7 +370,7 @@ function updateStats() {
     else gray++;
   });
   const cpCount = carparkData.length, osCount = onstreetData.length;
-  document.getElementById('total-count').textContent = `${cpCount}停車場 + ${osCount}街上`;
+  document.getElementById('total-count').textContent = `${cpCount}停 + ${osCount}街上`;
   document.getElementById('stat-green').textContent = green;
   document.getElementById('stat-red').textContent = red;
   document.getElementById('stat-gray').textContent = gray;
@@ -519,7 +398,6 @@ function setupTypePills() {
   });
 }
 
-setInterval(refreshData, 30000);
 init();
 </script>
 </body>
