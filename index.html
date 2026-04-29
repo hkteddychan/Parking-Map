@@ -305,28 +305,49 @@ async function loadData() {
       fetch(DATA_URLS.onstreet_occ).then(r => r.text())
     ]);
 
-    // Parse onstreet CSVs (skip first line which is a date)
+    // Parse onstreet CSVs
+    // Spaces CSV format: Line 0 = date, Line 1 = empty, Line 2 = header, Line 3+ = data
     const osLines = osSpace.trim().split('\n');
-    const osHeaderIdx = osLines.findIndex(l => l.startsWith('FeatureID'));
-    const osReader = osLines.slice(osHeaderIdx).join('\n');
-    const osParser = osLines.slice(osHeaderIdx + 1).map(l => {
-      const vals = l.split(',');
-      const h = osLines[osHeaderIdx].split(',');
-      const obj = {};
-      h.forEach((k, i) => { obj[k.trim()] = (vals[i] || '').trim(); });
-      return obj;
-    });
-
+    const osHeaderLine = osLines.find(l => l.startsWith('FeatureID'));
+    const osHeaderIdx = osLines.indexOf(osHeaderLine);
     const occLines = osOcc.trim().split('\n');
-    const occHeaderIdx = occLines.findIndex(l => l.startsWith('FeatureID'));
+    const occHeaderLine = occLines.find(l => l.startsWith('FeatureID'));
+    const occHeaderIdx = occLines.indexOf(occHeaderLine);
+
+    // Build occupancy lookup first
     const occMap = {};
-    occLines.slice(occHeaderIdx + 1).forEach(l => {
-      const vals = l.split(',');
+    for (let i = occHeaderIdx + 1; i < occLines.length; i++) {
+      const vals = occLines[i].split(',');
       const h = occLines[occHeaderIdx].split(',');
+      if (vals.length < h.length) continue;
       const obj = {};
-      h.forEach((k, i) => { obj[k.trim()] = (vals[i] || '').trim(); });
+      h.forEach((k, j) => { obj[k.trim()] = (vals[j] || '').trim(); });
       if (obj.ParkingSpaceId) occMap[obj.ParkingSpaceId] = obj;
-    });
+    }
+
+    // Build spaces list using proper CSV parsing (handle quoted fields)
+    function parseCSVLine(line) {
+      const result = [], curr = [];
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') { inQuotes = !inQuotes; }
+        else if (ch === ',' && !inQuotes) { result.push(curr.join('').trim()); curr.length = 0; }
+        else curr.push(ch);
+      }
+      result.push(curr.join('').trim());
+      return result;
+    }
+
+    const osHeader = parseCSVLine(osLines[osHeaderIdx]);
+    const osParser = [];
+    for (let i = osHeaderIdx + 1; i < osLines.length; i++) {
+      if (!osLines[i].trim()) continue;
+      const vals = parseCSVLine(osLines[i]);
+      const obj = {};
+      osHeader.forEach((k, j) => { obj[k.trim()] = (vals[j] || '').trim(); });
+      osParser.push(obj);
+    }
 
     // Index car park vacancy
     const vacIndex = {};
