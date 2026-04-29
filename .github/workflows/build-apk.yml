@@ -81,13 +81,13 @@ jobs:
           gradle-
 
     - name: Install npm dependencies
-      run: npm ci
+      run: npm install
 
     - name: Fix Capacitor plugin versions
       run: npm install @capacitor/haptics@7 @capacitor/status-bar@7
 
-    - name: Sync Capacitor
-      run: npx cap sync android
+    - name: Sync Capacitor (verbose)
+      run: npx cap sync android --verbose 2>&1 | tail -50
 
     - name: Build Android Debug APK
       run: |
