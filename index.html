@@ -198,7 +198,7 @@
   </div>
 
   <div class="refresh-card">
-    <button class="refresh-btn" onclick="location.reload()">🔄 刷新</button>
+    <button class="refresh-btn" onclick="loadData()">🔄 刷新</button>
     <span class="last-update" id="last-update">--</span>
   </div>
 </div>
@@ -232,8 +232,9 @@ function getStatus(cp) {
     if (cp.status === 'O') return 'red';
     return 'gray';
   }
+  // Carpark: vacancy can be 0, positive int, or null/string "N/A"/"-"
   const v = cp.vacancy;
-  if (v === null || v === undefined || v < 0) return 'gray';
+  if (v === null || v === undefined || v === '' || v === 'N/A' || v === '-' || v < 0) return 'gray';
   if (v === 0) return 'red';
   return 'green';
 }
@@ -271,16 +272,42 @@ async function init() {
 // ============ DATA ============
 async function loadData() {
   try {
-    // Load from local JSON file (pre-merged, no CORS issues)
-    const res = await fetch('parking-data.json');
-    const data = await res.json();
+    // Load onstreet from static JSON (NMOSPIOT has no CORS)
+    const jsonRes = await fetch('parking-data.json');
+    const jsonData = await jsonRes.json();
+    onstreetData = (jsonData.onstreet || []).map(os => ({ ...os, type: 'onstreet' }));
 
-    carparkData = (data.car_parks || []).map(cp => ({ ...cp, type: 'carpark' }));
-    onstreetData = (data.onstreet || []).map(os => ({ ...os, type: 'onstreet' }));
+    // Fetch carpark data directly from TD API (CORS: *, no auth needed)
+    const [cpBasic, cpVacancy] = await Promise.all([
+      fetch('https://resource.data.one.gov.hk/td/carpark/basic_info_all.json').then(r => r.json()),
+      fetch('https://resource.data.one.gov.hk/td/carpark/vacancy_all.json').then(r => r.json())
+    ]);
+
+    // Index vacancy by park_id
+    const vacIndex = {};
+    for (const v of (cpVacancy.car_park || [])) {
+      const pid = v.park_id;
+      for (const vt of (v.vehicle_type || [])) {
+        if (vt.type === 'P') {
+          for (const sc of (vt.service_category || [])) {
+            if (sc.category === 'HOURLY') {
+              vacIndex[pid] = sc.vacancy;
+            }
+          }
+        }
+      }
+    }
+
+    // Merge carparks
+    carparkData = (cpBasic.car_park || []).map(cp => ({
+      ...cp,
+      type: 'carpark',
+      vacancy: vacIndex[cp.park_id] ?? null
+    }));
 
     const now = new Date();
     document.getElementById('last-update').textContent =
-      `更新: ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+      `實時 · ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
 
     updateStats();
     loadStopsInView();
