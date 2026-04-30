@@ -5,165 +5,294 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>香港停車場及街上泊位地圖</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@400;500;700;900&display=swap" />
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Microsoft JhengHei", sans-serif; }
+  body { font-family: 'Noto Sans HK', -apple-system, BlinkMacSystemFont, "Microsoft JhengHei", sans-serif; }
   #map { width: 100vw; height: 100vh; }
 
+  /* === CONTROLS === */
   .controls {
-    position: absolute; top: 10px; left: 10px;
+    position: absolute; top: 12px; left: 12px;
     z-index: 1000; display: flex; flex-direction: column; gap: 8px;
-    max-width: 340px;
+    max-width: 360px; pointer-events: none;
   }
+  .controls > * { pointer-events: auto; }
 
+  /* Header card */
   .header-card {
-    background: white; border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
-    padding: 12px 14px;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.08);
+    padding: 14px 16px;
+    border: 1px solid rgba(255,255,255,0.6);
   }
   .header-card h1 {
-    font-size: 17px; font-weight: 800; color: #222;
+    font-size: 18px; font-weight: 900; color: #1a1a2e;
     display: flex; align-items: center; gap: 8px;
+    letter-spacing: -0.3px;
   }
-  .header-card h1 span { font-size: 22px; }
-  .header-card p { font-size: 12px; color: #888; margin-top: 4px; }
+  .header-card h1 span { font-size: 24px; }
+  .header-card p { font-size: 12px; color: #888; margin-top: 5px; font-weight: 500; }
 
-  .stats-bar { display: flex; gap: 8px; margin-top: 8px; }
-  .stat-item { flex: 1; background: #f5f5f5; border-radius: 8px; padding: 6px 8px; text-align: center; }
-  .stat-item .num { font-size: 20px; font-weight: 900; }
-  .stat-item .label { font-size: 10px; color: #888; margin-top: 1px; }
-  .stat-green .num { color: #27ae60; }
-  .stat-red .num { color: #e74c3c; }
-  .stat-gray .num { color: #95a5a6; }
-
-  .filter-card, .type-card {
-    background: white; border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
-    padding: 10px 12px;
+  .stats-bar { display: flex; gap: 8px; margin-top: 10px; }
+  .stat-item {
+    flex: 1; background: #f8f9fa; border-radius: 12px;
+    padding: 8px 8px; text-align: center;
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: transform 0.2s;
   }
-  .filter-label { font-size: 11px; color: #999; font-weight: 600; margin-bottom: 6px; }
-  .filter-pills, .type-pills { display: flex; gap: 5px; flex-wrap: wrap; }
+  .stat-item:hover { transform: translateY(-1px); }
+  .stat-item .num { font-size: 22px; font-weight: 900; line-height: 1; }
+  .stat-item .label { font-size: 10px; color: #888; margin-top: 2px; font-weight: 600; letter-spacing: 0.2px; }
+  .stat-green .num { color: #10b981; }
+  .stat-red .num { color: #ef4444; }
+  .stat-gray .num { color: #9ca3af; }
+
+  /* Type & filter cards */
+  .type-card, .filter-card {
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
+    padding: 10px 14px;
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+  .filter-label { font-size: 11px; color: #aaa; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.8px; }
+  .filter-pills, .type-pills { display: flex; gap: 6px; flex-wrap: wrap; }
   .pill, .type-pill {
-    padding: 4px 10px; border-radius: 14px; font-size: 12px; font-weight: 600;
+    padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: 700;
     border: 2px solid transparent; cursor: pointer; transition: all 0.2s;
-    background: #f0f0f0; color: #666;
+    background: #f1f3f5; color: #6b7280; letter-spacing: 0.1px;
   }
-  .pill.active, .type-pill.active { color: white; }
-  .pill[data-v=green].active { background: #27ae60; }
-  .pill[data-v=red].active { background: #e74c3c; }
-  .pill[data-v=gray].active { background: #95a5a6; }
-  .pill[data-v=all].active { background: #3498db; }
+  .pill:hover, .type-pill:hover { background: #e5e7eb; }
+  .pill.active, .type-pill.active { color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+  .pill[data-v=green].active { background: linear-gradient(135deg, #10b981, #059669); }
+  .pill[data-v=red].active { background: linear-gradient(135deg, #ef4444, #dc2626); }
+  .pill[data-v=gray].active { background: linear-gradient(135deg, #9ca3af, #6b7280); }
+  .pill[data-v=all].active { background: linear-gradient(135deg, #3b82f6, #2563eb); }
   .type-pill {
-    flex: 1; padding: 6px 8px; border-radius: 8px; font-size: 12px; font-weight: 700;
-    text-align: center; border: 2px solid transparent; background: #f0f0f0; color: #888;
+    flex: 1; padding: 8px 8px; border-radius: 10px; font-size: 12px; font-weight: 800;
+    text-align: center; border: 2px solid transparent; background: #f1f3f5; color: #6b7280;
   }
   .type-pill.active { border-color: currentColor; }
-  .type-pill[data-t=carpark].active { background: #e8f5e9; color: #2e7d32; }
-  .type-pill[data-t=onstreet].active { background: #fff3e0; color: #e65100; }
-  .type-pill[data-t=both].active { background: #e3f2fd; color: #1565c0; }
+  .type-pill[data-t=carpark].active { background: #dcfce7; color: #16a34a; }
+  .type-pill[data-t=onstreet].active { background: #ffedd5; color: #ea580c; }
+  .type-pill[data-t=both].active { background: #dbeafe; color: #2563eb; }
 
+  /* Refresh row */
   .refresh-card {
-    background: white; border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
-    padding: 8px 12px; display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
+    padding: 10px 14px;
+    display: flex; align-items: center; gap: 10px;
+    border: 1px solid rgba(255,255,255,0.6);
   }
   .refresh-btn {
-    background: #3498db; color: white; border: none;
-    padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white; border: none;
+    padding: 8px 18px; border-radius: 10px; font-size: 13px; font-weight: 700;
+    cursor: pointer; box-shadow: 0 2px 8px rgba(59,130,246,0.4);
+    transition: all 0.2s; letter-spacing: 0.2px;
   }
-  .refresh-btn:hover { background: #2980b9; }
-  .last-update { font-size: 11px; color: #aaa; }
+  .refresh-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59,130,246,0.5); }
+  .refresh-btn:active { transform: translateY(0); }
+  .last-update { font-size: 11px; color: #bbb; font-weight: 600; }
 
-  /* Car park marker */
-  .pk-icon { width: 36px !important; height: 36px !important; }
-  .pk-icon-inner {
-    width: 36px; height: 36px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.35);
-    border: 3px solid rgba(255,255,255,0.8);
-    position: relative; overflow: hidden;
-    font-size: 18px; font-weight: 900; color: white;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  /* === FAB === */
+  .fab-stack {
+    position: absolute; bottom: 28px; right: 14px;
+    z-index: 1000; display: flex; flex-direction: column; gap: 10px;
+    align-items: center;
   }
+  .fab {
+    width: 50px; height: 50px; border-radius: 16px;
+    border: none; cursor: pointer; font-size: 22px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.22), 0 1px 4px rgba(0,0,0,0.1);
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+  }
+  .fab:hover { transform: scale(1.08) translateY(-2px); }
+  .fab:active { transform: scale(0.95); }
+
+  .fab-locate {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+  }
+  .fab-locate .badge {
+    position: absolute; top: -4px; right: -4px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #ef4444; border: 2px solid white;
+    display: none; font-size: 9px; color: white;
+    align-items: center; justify-content: center;
+  }
+  .fab-locate.loading .badge { display: flex; }
+  .fab-locate.locating .badge { display: none; }
+
+  .fab-nearest {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+  }
+
+  /* Pulse animation for locating */
+  @keyframes fabPulse {
+    0%, 100% { box-shadow: 0 4px 16px rgba(102,126,234,0.5), 0 0 0 0 rgba(102,126,234,0.4); }
+    50% { box-shadow: 0 4px 16px rgba(102,126,234,0.5), 0 0 0 12px rgba(102,126,234,0); }
+  }
+  .fab-locate.locating {
+    animation: fabPulse 1.5s ease-in-out infinite;
+  }
+
+  /* === MARKERS === */
+  .pk-icon { width: 38px !important; height: 38px !important; }
+  .pk-icon-inner {
+    width: 38px; height: 38px; border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.35);
+    border: 3px solid rgba(255,255,255,0.85);
+    position: relative; overflow: hidden;
+    font-size: 17px; font-weight: 900; color: white;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    transition: transform 0.2s;
+  }
+  .pk-icon-inner:hover { transform: scale(1.15); }
   .pk-icon-inner::after {
-    content: ''; position: absolute; top: 3px; left: 3px; right: 3px; height: 10px;
+    content: ''; position: absolute; top: 4px; left: 4px; right: 4px; height: 9px;
     background: rgba(255,255,255,0.3); border-radius: 4px 4px 0 0;
   }
-  .pk-icon-inner.green { background: linear-gradient(135deg, #27ae60, #1e8449); }
-  .pk-icon-inner.red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-  .pk-icon-inner.gray { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
+  .pk-icon-inner.green { background: linear-gradient(135deg, #10b981, #059669); }
+  .pk-icon-inner.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+  .pk-icon-inner.gray { background: linear-gradient(135deg, #9ca3af, #6b7280); }
 
-  /* On-street marker */
-  .os-icon { width: 20px !important; height: 20px !important; }
+  .os-icon { width: 22px !important; height: 22px !important; }
   .os-icon-inner {
-    width: 20px; height: 20px; border-radius: 4px;
+    width: 22px; height: 22px; border-radius: 5px;
     transform: rotate(45deg);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.35);
-    border: 2px solid rgba(255,255,255,0.8);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    border: 2px solid rgba(255,255,255,0.85);
+    transition: transform 0.2s;
   }
-  .os-icon-inner.green { background: #27ae60; }
-  .os-icon-inner.red { background: #e74c3c; }
-  .os-icon-inner.gray { background: #95a5a6; }
+  .os-icon-inner:hover { transform: rotate(45deg) scale(1.2); }
+  .os-icon-inner.green { background: #10b981; }
+  .os-icon-inner.red { background: #ef4444; }
+  .os-icon-inner.gray { background: #9ca3af; }
 
-  /* Popup */
-  .pk-popup .leaflet-popup-content-wrapper { border-radius: 12px; padding: 0; overflow: hidden; }
-  .pk-popup .leaflet-popup-content { margin: 0; min-width: 240px; }
-  .pk-header { padding: 14px 14px 10px; border-bottom: 1px solid #eee; }
-  .pk-name { font-size: 15px; font-weight: 700; color: #222; }
-  .pk-addr { font-size: 12px; color: #888; margin-top: 3px; }
-  .pk-body { padding: 10px 14px 12px; }
-  .pk-vacancy { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-  .pk-vacancy-num { font-size: 36px; font-weight: 900; line-height: 1; }
-  .pk-vacancy-num.green { color: #27ae60; }
-  .pk-vacancy-num.red { color: #e74c3c; }
-  .pk-vacancy-num.gray { color: #95a5a6; }
+  /* === POPUP === */
+  .pk-popup .leaflet-popup-content-wrapper {
+    border-radius: 16px; padding: 0; overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  }
+  .pk-popup .leaflet-popup-content { margin: 0; min-width: 250px; }
+  .pk-header { padding: 16px 16px 12px; border-bottom: 1px solid #f0f0f0; }
+  .pk-name { font-size: 15px; font-weight: 800; color: #1a1a2e; line-height: 1.3; }
+  .pk-addr { font-size: 12px; color: #999; margin-top: 4px; }
+  .pk-body { padding: 12px 16px 14px; }
+  .pk-vacancy { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .pk-vacancy-num { font-size: 40px; font-weight: 900; line-height: 1; }
+  .pk-vacancy-num.green { color: #10b981; }
+  .pk-vacancy-num.red { color: #ef4444; }
+  .pk-vacancy-num.gray { color: #9ca3af; }
   .pk-vacancy-label { font-size: 13px; color: #888; }
-  .pk-vacancy-label strong { color: #333; font-size: 15px; }
-  .pk-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .pk-meta-item { background: #f5f5f5; border-radius: 8px; padding: 7px 10px; }
-  .pk-meta-item .label { font-size: 10px; color: #aaa; }
-  .pk-meta-item .value { font-size: 13px; font-weight: 700; color: #333; margin-top: 1px; }
-  .pk-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; margin-top: 4px; }
-  .pk-badge.carpark { background: #e8f5e9; color: #2e7d32; }
-  .pk-badge.onstreet { background: #fff3e0; color: #e65100; }
-  .pk-badge.green { background: #d4efdf; color: #1e8449; }
-  .pk-badge.red { background: #fadbd8; color: #c0392b; }
-  .pk-badge.gray { background: #f0f0f0; color: #7f8c8d; }
-  .pk-lastupdate { font-size: 10px; color: #bbb; margin-top: 6px; }
+  .pk-vacancy-label strong { color: #374151; font-size: 15px; font-weight: 700; }
+  .pk-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .pk-meta-item { background: #f8f9fa; border-radius: 10px; padding: 8px 12px; }
+  .pk-meta-item .label { font-size: 10px; color: #aaa; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .pk-meta-item .value { font-size: 14px; font-weight: 800; color: #1a1a2e; margin-top: 2px; }
+  .pk-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; margin-right: 4px; }
+  .pk-badge.carpark { background: #dcfce7; color: #16a34a; }
+  .pk-badge.onstreet { background: #ffedd5; color: #ea580c; }
+  .pk-badge.green { background: #d1fae5; color: #059669; }
+  .pk-badge.red { background: #fee2e2; color: #dc2626; }
+  .pk-badge.gray { background: #f3f4f6; color: #6b7280; }
+  .pk-lastupdate { font-size: 10px; color: #ccc; margin-top: 8px; font-weight: 600; }
   .leaflet-popup-tip { display: none; }
 
-  .legend-card {
-    position: absolute; bottom: 30px; right: 10px;
-    z-index: 1000; background: white;
-    border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.18);
-    padding: 10px 12px;
+  /* Navigate button */
+  .pk-nav-btn {
+    display: block; width: 100%; margin-top: 10px; padding: 10px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white; border: none; border-radius: 10px;
+    font-size: 13px; font-weight: 800; cursor: pointer;
+    text-align: center; text-decoration: none;
+    box-shadow: 0 2px 8px rgba(59,130,246,0.35);
+    transition: all 0.2s; letter-spacing: 0.2px;
   }
-  .legend-title { font-size: 11px; color: #999; font-weight: 600; margin-bottom: 6px; }
-  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #555; margin-bottom: 4px; }
-  .legend-p { width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; color: white; flex-shrink: 0; }
-  .legend-d { width: 14px; height: 14px; border-radius: 2px; transform: rotate(45deg); flex-shrink: 0; }
-  .legend-p.green { background: #27ae60; }
-  .legend-p.red { background: #e74c3c; }
-  .legend-p.gray { background: #95a5a6; }
-  .legend-d.green { background: #27ae60; }
-  .legend-d.red { background: #e74c3c; }
-  .legend-d.gray { background: #95a5a6; }
+  .pk-nav-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(59,130,246,0.5); }
 
+  /* === LEGEND === */
+  .legend-card {
+    position: absolute; bottom: 28px; left: 10px;
+    z-index: 1000; background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-radius: 14px; box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    padding: 12px 14px;
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+  .legend-title { font-size: 10px; color: #bbb; font-weight: 800; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.8px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #555; margin-bottom: 5px; font-weight: 600; }
+  .legend-p { width: 18px; height: 18px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; color: white; flex-shrink: 0; }
+  .legend-d { width: 14px; height: 14px; border-radius: 3px; transform: rotate(45deg); flex-shrink: 0; }
+  .legend-p.green { background: #10b981; }
+  .legend-p.red { background: #ef4444; }
+  .legend-p.gray { background: #9ca3af; }
+  .legend-d.green { background: #10b981; }
+  .legend-d.red { background: #ef4444; }
+  .legend-d.gray { background: #9ca3af; }
+
+  /* === LOADING === */
   #loading {
-    position: fixed; inset: 0; background: rgba(255,255,255,0.95);
+    position: fixed; inset: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;
   }
-  #loading .spinner { width: 40px; height: 40px; border: 4px solid #e0e0e0; border-top-color: #3498db; border-radius: 50%; animation: spin 0.8s linear infinite; }
-  #loading p { margin-top: 14px; font-size: 15px; color: #666; }
+  #loading .logo { font-size: 48px; margin-bottom: 20px; animation: bounce 1s ease-in-out infinite alternate; }
+  @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+  #loading .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+  }
+  #loading p { margin-top: 16px; font-size: 15px; color: rgba(255,255,255,0.9); font-weight: 600; }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* === TOAST === */
+  #toast {
+    position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: rgba(30,30,40,0.92); color: white;
+    padding: 10px 20px; border-radius: 12px; font-size: 13px; font-weight: 600;
+    z-index: 9999; opacity: 0; transition: all 0.3s;
+    pointer-events: none; white-space: nowrap;
+    backdrop-filter: blur(8px);
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* === LOCATION ACCURACY CIRCLE === */
+  .accuracy-circle { fill: #667eea; fill-opacity: 0.12; stroke: #667eea; stroke-opacity: 0.4; }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .controls { max-width: calc(100vw - 24px); }
+    .legend-card { display: none; }
+    .fab { width: 46px; height: 46px; font-size: 20px; }
+  }
 </style>
 </head>
 <body>
 
 <div id="loading">
+  <div class="logo">🚗</div>
   <div class="spinner"></div>
   <p>正在載入泊位數據...</p>
 </div>
+
+<div id="toast"></div>
 
 <div id="map"></div>
 
@@ -173,7 +302,7 @@
     <p>運輸署實時數據 · <span id="total-count">--</span> 個泊位</p>
     <div class="stats-bar">
       <div class="stat-item stat-green"><div class="num" id="stat-green">--</div><div class="label">有空位</div></div>
-      <div class="stat-item stat-red"><div class="num" id="stat-red">--</div><div class="label">已佔用/滿</div></div>
+      <div class="stat-item stat-red"><div class="num" id="stat-red">--</div><div class="label">已滿</div></div>
       <div class="stat-item stat-gray"><div class="num" id="stat-gray">--</div><div class="label">無數據</div></div>
     </div>
   </div>
@@ -183,7 +312,7 @@
     <div class="type-pills">
       <div class="type-pill active" data-t="both">全部</div>
       <div class="type-pill" data-t="carpark">🏍️ 停車場</div>
-      <div class="type-pill" data-t="onstreet">📍 街上感應泊位</div>
+      <div class="type-pill" data-t="onstreet">📍 街上</div>
     </div>
   </div>
 
@@ -198,7 +327,7 @@
   </div>
 
   <div class="refresh-card">
-    <button class="refresh-btn" onclick="loadData()">🔄 刷新</button>
+    <button class="refresh-btn" id="refreshBtn">🔄 刷新</button>
     <span class="last-update" id="last-update">--</span>
   </div>
 </div>
@@ -213,425 +342,394 @@
   <div class="legend-item"><div class="legend-d gray"></div>街上泊位·不可用</div>
 </div>
 
+<div class="fab-stack">
+  <button class="fab fab-locate" id="fabLocate" title="我的位置">
+    📍
+    <span class="badge">⟳</span>
+  </button>
+  <button class="fab fab-nearest" id="fabNearest" title="最近的泊位">
+    🎯
+  </button>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ============================================================
-//  香港停車場及街上泊位地圖 — parking-map 增強版
-//  Fixes: race-condition guard, debounce, independent fetch,
-//         timeout, null-safety, XHTML escaping, refresh state
-// ============================================================
+// ============ CONFIG ============
+const HK_CENTER = [22.3193, 114.1694];
+const DEFAULT_ZOOM = 13;
+const NEAREST_SEARCH_ZOOM = 16;
 
-(function () {
-  'use strict';
+// ============ STATE ============
+let map, markers = [];
+let carparkData = [], onstreetData = [];
+let currentFilter = 'all';
+let currentType = 'both';
+let userLatLng = null;
+let userMarker = null;
+let userAccuracy = null;
 
-  // ── CONFIG ────────────────────────────────────────────────
-  const HK_CENTER    = [22.3193, 114.1694];
-  const DEFAULT_ZOOM = 12;
-  const FETCH_TIMEOUT_MS = 15000;   // 15 s per request
-  const DEBOUNCE_MS      = 250;     // pan/zoom debounce
+// ============ TOAST ============
+function showToast(msg, duration = 2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
 
-  // ── STATE ─────────────────────────────────────────────────
-  let map          = null;
-  let markers      = [];
-  let carparkData  = [];
-  let onstreetData = [];
-  let currentFilter = 'all';
-  let currentType   = 'both';
-
-  // Guard against concurrent / overlapping loadData() calls
-  let loadController = null;   // AbortController for in-flight fetches
-  let isLoading      = false;  // UI lock flag
-
-  // ── UTIL ──────────────────────────────────────────────────
-  /**
-   * Wrap a fetch with an AbortController timeout.
-   * @param {string} url
-   * @param {AbortSignal} signal  external signal (e.g. from loadController)
-   * @returns {Promise<Response>}
-   */
-  function fetchWithTimeout(url, signal) {
-    const to = setTimeout(() => signal.throw?.(), FETCH_TIMEOUT_MS);
-    return fetch(url, { signal })
-      .finally(() => clearTimeout(to));
+// ============ STATUS ============
+function getStatus(cp) {
+  if (cp.type === 'onstreet') {
+    if (cp.status === 'V') return 'green';
+    if (cp.status === 'O') return 'red';
+    return 'gray';
   }
+  const v = cp.vacancy;
+  if (v === null || v === undefined || v === '' || v === 'N/A' || v === '-' || v < 0) return 'gray';
+  if (v === 0) return 'red';
+  return 'green';
+}
 
-  /** Gentle debounce — stores pending call, cancels previous. */
-  function debounce(fn, ms) {
-    let timer = null;
-    return function (...args) {
-      clearTimeout(timer);
-      timer = setTimeout(() => fn.apply(this, args), ms);
-    };
-  }
-
-  /** Escape HTML entities to prevent XSS in popups. */
-  function esc(str) {
-    if (str == null) return '';
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
-  /** Null-safe parseFloat — returns null for non-numeric input. */
-  function safeFloat(val) {
-    if (val == null || val === '') return null;
-    const f = parseFloat(val);
-    return isNaN(f) ? null : f;
-  }
-
-  /** Format a Date to HH:MM:SS local time string. */
-  function fmtTime(d) {
-    const hh = String(d.getHours()).padStart(2, '0');
-    const mm = String(d.getMinutes()).padStart(2, '0');
-    const ss = String(d.getSeconds()).padStart(2, '0');
-    return `${hh}:${mm}:${ss}`;
-  }
-
-  // ── STATUS ────────────────────────────────────────────────
-  function getStatus(cp) {
-    if (cp.type === 'onstreet') {
-      if (cp.status === 'V') return 'green';
-      if (cp.status === 'O') return 'red';
-      return 'gray';
-    }
-    // Carpark
-    const v = cp.vacancy;
-    if (v === null || v === undefined || v === '' ||
-        v === 'N/A' || v === '-' || Number(v) < 0) {
-      return 'gray';
-    }
-    return Number(v) === 0 ? 'red' : 'green';
-  }
-
-  function getIcon(cp, status) {
-    const cls = esc(status);
-    if (cp.type === 'onstreet') {
-      return L.divIcon({
-        html: `<div class="os-icon-inner ${cls}"></div>`,
-        className: 'os-icon',
-        iconSize: [20, 20], iconAnchor: [10, 10], popupAnchor: [0, -8]
-      });
-    }
+function getIcon(cp, status) {
+  const cls = status;
+  if (cp.type === 'onstreet') {
     return L.divIcon({
-      html: `<div class="pk-icon-inner ${cls}">P</div>`,
-      className: 'pk-icon',
-      iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -14]
+      html: `<div class="os-icon-inner ${cls}"></div>`,
+      className: 'os-icon', iconSize: [22, 22], iconAnchor: [11, 11], popupAnchor: [0, -8]
     });
   }
+  return L.divIcon({
+    html: `<div class="pk-icon-inner ${cls}">P</div>`,
+    className: 'pk-icon', iconSize: [38, 38], iconAnchor: [19, 19], popupAnchor: [0, -16]
+  });
+}
 
-  // ── INIT ──────────────────────────────────────────────────
-  async function init() {
-    // Initialise Leaflet map
-    map = L.map('map', { zoomControl: true }).setView(HK_CENTER, DEFAULT_ZOOM);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '© OpenStreetMap © CARTO',
-      maxZoom: 19
-    }).addTo(map);
+// ============ INIT ============
+async function init() {
+  map = L.map('map', {
+    zoomControl: false  // hide default zoom control
+  }).setView(HK_CENTER, DEFAULT_ZOOM);
 
-    // Debounced render on map movement
-    const debouncedRender = debounce(loadStopsInView, DEBOUNCE_MS);
-    map.on('moveend',   debouncedRender);
-    map.on('zoomend',   debouncedRender);
+  // Add zoom control to bottom-right
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    setupFilterPills();
-    setupTypePills();
-    setupRefreshButton();
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap © CARTO', maxZoom: 19
+  }).addTo(map);
 
-    await loadData();
-    hideLoading();
+  map.on('moveend', loadStopsInView);
+  map.on('zoomend', loadStopsInView);
+
+  setupFilterPills();
+  setupTypePills();
+  setupFabs();
+
+  // Refresh button
+  document.getElementById('refreshBtn').onclick = () => {
+    document.getElementById('refreshBtn').textContent = '⟳ 載入中...';
+    loadData().finally(() => {
+      document.getElementById('refreshBtn').textContent = '🔄 刷新';
+    });
+  };
+
+  await loadData();
+  document.getElementById('loading').style.display = 'none';
+}
+
+// ============ FAB SETUP ============
+function setupFabs() {
+  // Locate me
+  document.getElementById('fabLocate').onclick = locateMe;
+
+  // Nearest
+  document.getElementById('fabNearest').onclick = findNearest;
+}
+
+// ============ GEOLOCATION ============
+function locateMe() {
+  const btn = document.getElementById('fabLocate');
+  if (!navigator.geolocation) {
+    showToast('⚠️ 瀏覽器不支援定位功能');
+    return;
   }
 
-  // ── DATA FETCH ────────────────────────────────────────────
-  /**
-   * Load / refresh all parking data.
-   * Guard: if a fetch is already in-flight, abort it first.
-   * Independent fetches: each API is fetched on its own timeline;
-   *   results are merged when both resolve.
-   */
-  async function loadData() {
-    // Cancel any in-flight request
-    if (loadController) {
-      loadController.abort();
-      loadController = null;
-    }
+  btn.classList.add('loading');
+  btn.classList.remove('locating');
 
-    // Fresh AbortController for this run
-    loadController = new AbortController();
-    const signal = loadController.signal;
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+      userLatLng = L.latLng(lat, lng);
 
-    setLoadingState(true);
+      // Remove old markers
+      if (userMarker) map.removeLayer(userMarker);
+      if (userAccuracy) map.removeLayer(userAccuracy);
 
-    try {
-      // ── 1. On-street (static JSON, cached — add bust param on refresh)
-      const jsonRes = await fetchWithTimeout(
-        `parking-data.json?t=${Date.now()}`, signal
-      );
-      if (!jsonRes.ok) throw new Error(`HTTP ${jsonRes.status} parking-data.json`);
-      const jsonData = await jsonRes.json();
+      // Accuracy circle
+      userAccuracy = L.circle(userLatLng, {
+        radius: accuracy,
+        className: 'accuracy-circle',
+        weight: 2, fillOpacity: 0.1
+      }).addTo(map);
 
-      // ── 2. TD carpark APIs — fetched independently so one failure
-      //       does not doom the whole operation
-      let cpBasic   = null;
-      let cpVacancy = null;
-      let fetchErrors = [];
+      // Blue pulsing dot
+      userMarker = L.circleMarker(userLatLng, {
+        radius: 10,
+        fillColor: '#667eea',
+        fillOpacity: 1,
+        color: 'white',
+        weight: 3,
+        className: 'user-marker'
+      }).addTo(map);
 
-      try {
-        const r1 = await fetchWithTimeout(
-          'https://resource.data.one.gov.hk/td/carpark/basic_info_all.json',
-          signal
-        );
-        if (!r1.ok) throw new Error(`HTTP ${r1.status} basic_info_all`);
-        cpBasic = await r1.json();
-      } catch (e) {
-        if (e.name === 'AbortError') throw e;          // re-throw abort
-        fetchErrors.push('停車場基本資料');
-        console.warn('basic_info_all failed:', e);
+      // Style the marker
+      const el = userMarker.getElement();
+      if (el) {
+        el.style.boxShadow = '0 0 0 4px rgba(102,126,234,0.35)';
+        el.style.animation = 'userPulse 2s ease-in-out infinite';
       }
 
-      try {
-        const r2 = await fetchWithTimeout(
-          'https://resource.data.one.gov.hk/td/carpark/vacancy_all.json',
-          signal
-        );
-        if (!r2.ok) throw new Error(`HTTP ${r2.status} vacancy_all`);
-        cpVacancy = await r2.json();
-      } catch (e) {
-        if (e.name === 'AbortError') throw e;
-        fetchErrors.push('停車場空位數據');
-        console.warn('vacancy_all failed:', e);
-      }
-
-      // ── 3. Process on-street
-      onstreetData = (jsonData.onstreet || []).map(os => ({
-        ...os,
-        type: 'onstreet'
-      }));
-
-      // ── 4. Process carpark vacancy index
-      const vacIndex = {};
-      if (cpVacancy && cpVacancy.car_park) {
-        for (const v of cpVacancy.car_park) {
-          const pid = v.park_id;
-          for (const vt of (v.vehicle_type || [])) {
-            if (vt.type !== 'P') continue;
-            for (const sc of (vt.service_category || [])) {
-              if (sc.category === 'HOURLY') {
-                vacIndex[pid] = sc.vacancy;   // may be 0
-              }
-            }
-          }
-        }
-      }
-
-      // ── 5. Merge carpark data
-      carparkData = (cpBasic?.car_park || []).map(cp => ({
-        ...cp,
-        type: 'carpark',
-        vacancy: Object.prototype.hasOwnProperty.call(vacIndex, cp.park_id)
-          ? vacIndex[cp.park_id]
-          : null
-      }));
-
-      // ── 6. Update UI
-      const now = new Date();
-      document.getElementById('last-update').textContent =
-        `實時 · ${fmtTime(now)}${fetchErrors.length ? ' ⚠' : ''}`;
-
-      updateStats();
+      map.setView(userLatLng, NEAREST_SEARCH_ZOOM);
+      btn.classList.remove('loading', 'locating');
+      btn.classList.add('locating');
+      showToast('📍 已定位');
       loadStopsInView();
+    },
+    (err) => {
+      btn.classList.remove('loading', 'locating');
+      let msg = '⚠️ 無法取得位置';
+      if (err.code === 1) msg = '⚠️ 請允許位置權限';
+      if (err.code === 2) msg = '⚠️ 定位失敗，請稍後再試';
+      if (err.code === 3) msg = '⚠️ 定位逾時';
+      showToast(msg);
+    },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 }
+  );
+}
 
-    } catch (e) {
-      if (e.name === 'AbortError') return;   // intentional abort, ignore
-      console.error('Load error:', e);
-      showLoadError('載入失敗，請稍後再試');
-    } finally {
-      setLoadingState(false);
-      loadController = null;
-    }
-  }
+// ============ NEAREST ============
+function findNearest() {
+  const all = [...carparkData, ...onstreetData].filter(cp => {
+    const lat = parseFloat(cp.latitude), lng = parseFloat(cp.longitude);
+    return lat && lng;
+  });
 
-  // ── RENDER ─────────────────────────────────────────────────
-  function loadStopsInView() {
-    if (!map) return;
-
-    // Remove existing markers
-    markers.forEach(m => map.removeLayer(m));
-    markers = [];
-
-    // Dataset selection
-    let dataset;
-    if (currentType === 'carpark') {
-      dataset = carparkData;
-    } else if (currentType === 'onstreet') {
-      dataset = onstreetData;
+  if (!userLatLng) {
+    // Try auto-locate
+    if (navigator.geolocation) {
+      showToast('🎯 正在定位...');
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          userLatLng = L.latLng(pos.coords.latitude, pos.coords.longitude);
+          zoomToNearest(all);
+        },
+        () => {
+          // Use map center
+          userLatLng = map.getCenter();
+          zoomToNearest(all);
+        },
+        { timeout: 8000, maximumAge: 30000 }
+      );
     } else {
-      dataset = [...carparkData, ...onstreetData];
+      userLatLng = map.getCenter();
+      zoomToNearest(all);
     }
-
-    const bounds = map.getBounds();
-
-    dataset.forEach(cp => {
-      // Fast-path: filter by status first (avoids expensive bounds check)
-      const status = getStatus(cp);
-      if (currentFilter !== 'all' && status !== currentFilter) return;
-
-      // Validate coordinates
-      const lat = safeFloat(cp.latitude);
-      const lng = safeFloat(cp.longitude);
-      if (lat == null || lng == null) return;
-      if (!bounds.contains([lat, lng])) return;
-
-      const m = L.marker([lat, lng], { icon: getIcon(cp, status) });
-      m.bindPopup(createPopup(cp, status), { className: 'pk-popup', maxWidth: 300 });
-      m.addTo(map);
-      markers.push(m);
-    });
+    return;
   }
 
-  function createPopup(cp, status) {
-    if (cp.type === 'onstreet') {
-      const statusText = cp.status === 'V' ? '空置'
-        : cp.status === 'O' ? '已被佔用'
-        : '不可用';
-      const icon = cp.status === 'V' ? '✓'
-        : cp.status === 'O' ? '✗'
-        : '?';
-      return `
-      <div class="pk-header">
-        <div class="pk-name">${esc(cp.name_tc) || esc(cp.name_en) || '无名稱'}</div>
-        <div class="pk-addr">${esc(cp.address_tc) || esc(cp.address_en) || ''}</div>
-      </div>
-      <div class="pk-body">
-        <div class="pk-vacancy">
-          <div class="pk-vacancy-num ${esc(status)}">${icon}</div>
-          <div class="pk-vacancy-label"><strong>${esc(statusText)}</strong><br>${esc(cp.district_tc || '')}</div>
-        </div>
-        <span class="pk-badge onstreet">📍 街上感應泊位</span>
-        ${cp.last_change ? `<div class="pk-lastupdate">更新: ${esc(cp.last_change)}</div>` : ''}
-      </div>`;
+  zoomToNearest(all);
+}
+
+function zoomToNearest(all) {
+  // Prefer green (available), then gray, then red
+  let nearest = null;
+  let nearestDist = Infinity;
+  let fallback = null;
+  let fallbackDist = Infinity;
+
+  all.forEach(cp => {
+    const lat = parseFloat(cp.latitude), lng = parseFloat(cp.longitude);
+    if (!lat || !lng) return;
+    const dist = userLatLng.distanceTo(L.latLng(lat, lng));
+    const status = getStatus(cp);
+
+    if (status === 'green') {
+      if (dist < nearestDist) { nearestDist = dist; nearest = { cp, lat, lng, dist, status }; }
     }
+    if (!fallback || dist < fallbackDist) { fallbackDist = dist; fallback = { cp, lat, lng, dist, status }; }
+  });
 
-    // Carpark popup
-    const v = cp.vacancy;
-    const vacNum = (v !== null && v !== undefined && Number(v) >= 0) ? Number(v) : '--';
-    const statusLabel = status === 'green' ? '有空位'
-      : status === 'red'   ? '已滿'
-      : '無數據';
-    const height = safeFloat(cp.height);
-    const heightStr = height != null && height > 0 ? `${height}m` : '無';
+  const target = nearest || fallback;
+  if (!target) { showToast('⚠️ 找不到泊位數據'); return; }
 
+  map.setView([target.lat, target.lng], NEAREST_SEARCH_ZOOM, { animate: true });
+
+  // Open popup for nearest
+  setTimeout(() => {
+    const m = markers.find(marker => {
+      const mPos = marker.getLatLng();
+      return Math.abs(mPos.lat - target.lat) < 0.0001 && Math.abs(mPos.lng - target.lng) < 0.0001;
+    });
+    if (m) m.openPopup();
+  }, 600);
+
+  const distKm = (target.dist / 1000).toFixed(1);
+  const statusEmoji = target.status === 'green' ? '🟢' : target.status === 'red' ? '🔴' : '⚪';
+  showToast(`${statusEmoji} 最近泊位 ${distKm}km`);
+}
+
+// ============ DATA ============
+// NOTE: TD real-time vacancy requires CORS proxy; parking-data.json already
+// contains pre-merged TD vacancy updated every 10min by GitHub Actions.
+// Direct TD API calls here were broken (CORS 403). Removed 2026-04-30.
+// Runtime fetch now uses ONLY the merged parking-data.json from GitHub Pages.
+async function loadData() {
+  try {
+    const jsonRes = await fetch('https://hkteddychan.github.io/Parking-Map/parking-data.json');
+    const jsonData = await jsonRes.json();
+    onstreetData = (jsonData.onstreet || []).map(os => ({ ...os, type: 'onstreet' }));
+    carparkData = (jsonData.car_parks || []).map(cp => ({ ...cp, type: 'carpark' }));
+
+    const now = new Date();
+    document.getElementById('last-update').textContent =
+      `實時 · ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+
+    updateStats();
+    loadStopsInView();
+  } catch (e) {
+    console.error('Load error:', e);
+    document.querySelector('#loading p').textContent = '載入失敗，請刷新';
+  }
+}
+
+// ============ RENDER ============
+function loadStopsInView() {
+  const bounds = map.getBounds();
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+
+  const all = currentType === 'both' ? [...carparkData, ...onstreetData]
+    : currentType === 'carpark' ? carparkData : onstreetData;
+
+  all.forEach(cp => {
+    const lat = parseFloat(cp.latitude), lng = parseFloat(cp.longitude);
+    if (!lat || !lng) return;
+    if (!bounds.contains([lat, lng])) return;
+
+    const status = getStatus(cp);
+    if (currentFilter !== 'all' && status !== currentFilter) return;
+
+    const m = L.marker([lat, lng], { icon: getIcon(cp, status) });
+    m.bindPopup(createPopup(cp, status), { className: 'pk-popup', maxWidth: 320 });
+    m.addTo(map);
+    markers.push(m);
+  });
+}
+
+function createPopup(cp, status) {
+  const name = cp.name_tc || cp.name_en || '未知';
+  const addr = cp.type === 'onstreet'
+    ? (cp.address_tc || cp.address_en || '')
+    : (cp.displayAddress_tc || cp.displayAddress_en || '');
+
+  if (cp.type === 'onstreet') {
+    const statusText = cp.status === 'V' ? '空置' : cp.status === 'O' ? '已被佔用' : '不可用';
+    const icon = cp.status === 'V' ? '✓' : cp.status === 'O' ? '✗' : '?';
     return `
     <div class="pk-header">
-      <div class="pk-name">${esc(cp.name_tc) || esc(cp.name_en) || '无名稱'}</div>
-      <div class="pk-addr">${esc(cp.displayAddress_tc) || esc(cp.displayAddress_en) || ''}</div>
+      <div class="pk-name">${name}</div>
+      <div class="pk-addr">${addr}</div>
     </div>
     <div class="pk-body">
       <div class="pk-vacancy">
-        <div class="pk-vacancy-num ${esc(status)}">${vacNum}</div>
-        <div class="pk-vacancy-label">個空位<br><strong>${esc(cp.district_tc || '')}</strong></div>
+        <div class="pk-vacancy-num ${status}">${icon}</div>
+        <div class="pk-vacancy-label"><strong>${statusText}</strong><br>${cp.district_tc || ''}</div>
+      </div>
+      <span class="pk-badge onstreet">📍 街上感應泊位</span>
+      ${cp.last_change ? `<div class="pk-lastupdate">更新: ${cp.last_change}</div>` : ''}
+    </div>`;
+  }
+
+  const v = cp.vacancy;
+  const vacNum = v !== null && v >= 0 ? v : '--';
+  const statusLabel = status === 'green' ? '有空位' : status === 'red' ? '已滿' : '無數據';
+  const district = cp.district_tc || '';
+
+  return `
+    <div class="pk-header">
+      <div class="pk-name">${name}</div>
+      <div class="pk-addr">${addr}</div>
+    </div>
+    <div class="pk-body">
+      <div class="pk-vacancy">
+        <div class="pk-vacancy-num ${status}">${vacNum}</div>
+        <div class="pk-vacancy-label">個空位<br><strong>${district}</strong></div>
       </div>
       <div class="pk-meta">
         <div class="pk-meta-item">
           <div class="label">狀態</div>
-          <div class="value"><span class="pk-badge ${esc(status)}">${esc(statusLabel)}</span></div>
+          <div class="value"><span class="pk-badge ${status}">${statusLabel}</span></div>
         </div>
         <div class="pk-meta-item">
           <div class="label">高度限制</div>
-          <div class="value">${esc(heightStr)}</div>
+          <div class="value">${cp.height > 0 ? cp.height + 'm' : '無'}</div>
         </div>
+        ${cp.remark_tc ? `<div class="pk-meta-item"><div class="label">收費</div><div class="value" style="font-size:12px">${cp.remark_tc.replace(/\n/g, ' ')}</div></div>` : ''}
       </div>
       <span class="pk-badge carpark">🏍️ 停車場</span>
+      <a class="pk-nav-btn" href="https://www.google.com/maps/dir/?api=1&destination=${parseFloat(cp.latitude)},${parseFloat(cp.longitude)}" target="_blank" rel="noopener">
+        📍 Google Maps 導航
+      </a>
     </div>`;
-  }
+}
 
-  // ── STATS ─────────────────────────────────────────────────
-  function updateStats() {
-    let green = 0, red = 0, gray = 0;
-    const all = [...carparkData, ...onstreetData];
-    all.forEach(cp => {
-      const s = getStatus(cp);
-      if      (s === 'green') green++;
-      else if (s === 'red')   red++;
-      else                    gray++;
-    });
-    const cpCount = carparkData.length;
-    const osCount = onstreetData.length;
-    document.getElementById('total-count').textContent = `${cpCount}停 + ${osCount}街上`;
-    document.getElementById('stat-green').textContent = green;
-    document.getElementById('stat-red').textContent   = red;
-    document.getElementById('stat-gray').textContent  = gray;
-  }
+function updateStats() {
+  let green = 0, red = 0, gray = 0;
+  const all = [...carparkData, ...onstreetData];
+  all.forEach(cp => {
+    const s = getStatus(cp);
+    if (s === 'green') green++;
+    else if (s === 'red') red++;
+    else gray++;
+  });
+  const cpCount = carparkData.length, osCount = onstreetData.length;
+  document.getElementById('total-count').textContent = `${cpCount}停 + ${osCount}街上`;
+  document.getElementById('stat-green').textContent = green;
+  document.getElementById('stat-red').textContent = red;
+  document.getElementById('stat-gray').textContent = gray;
+}
 
-  // ── UI HELPERS ────────────────────────────────────────────
-  function hideLoading() {
-    const el = document.getElementById('loading');
-    if (el) el.style.display = 'none';
-  }
+function setupFilterPills() {
+  document.querySelectorAll('.filter-card .pill').forEach(pill => {
+    pill.onclick = () => {
+      document.querySelectorAll('.filter-card .pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentFilter = pill.dataset.v;
+      loadStopsInView();
+    };
+  });
+}
 
-  function showLoadError(msg) {
-    const el = document.getElementById('loading');
-    if (el) {
-      el.style.display = 'flex';
-      el.querySelector('p').textContent = msg;
-    }
-  }
+function setupTypePills() {
+  document.querySelectorAll('.type-pill').forEach(pill => {
+    pill.onclick = () => {
+      document.querySelectorAll('.type-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentType = pill.dataset.t;
+      loadStopsInView();
+    };
+  });
+}
 
-  function setLoadingState(loading) {
-    isLoading = loading;
-    const btn = document.querySelector('.refresh-btn');
-    if (btn) {
-      btn.disabled = loading;
-      btn.textContent = loading ? '⏳ 載入中…' : '🔄 刷新';
-    }
-  }
+// Add user pulse animation
+const style = document.createElement('style');
+style.textContent = `
+@keyframes userPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(102,126,234,0.5), 0 0 0 4px rgba(102,126,234,0.3); }
+  50% { box-shadow: 0 0 0 8px rgba(102,126,234,0), 0 0 0 4px rgba(102,126,234,0.3); }
+}`;
+document.head.appendChild(style);
 
-  // ── EVENT SETUP ────────────────────────────────────────────
-  function setupFilterPills() {
-    document.querySelectorAll('.filter-card .pill').forEach(pill => {
-      pill.addEventListener('click', () => {
-        document.querySelectorAll('.filter-card .pill')
-          .forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
-        currentFilter = pill.dataset.v;
-        loadStopsInView();
-      });
-    });
-  }
-
-  function setupTypePills() {
-    document.querySelectorAll('.type-pill').forEach(pill => {
-      pill.addEventListener('click', () => {
-        document.querySelectorAll('.type-pill')
-          .forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
-        currentType = pill.dataset.t;
-        loadStopsInView();
-      });
-    });
-  }
-
-  function setupRefreshButton() {
-    const btn = document.querySelector('.refresh-btn');
-    if (btn) {
-      // Remove old inline onclick to avoid double-firing
-      btn.removeAttribute('onclick');
-      btn.addEventListener('click', () => {
-        if (!isLoading) loadData();
-      });
-    }
-  }
-
-  // ── BOOT ──────────────────────────────────────────────────
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-
-})();
+init();
 </script>
 </body>
 </html>
