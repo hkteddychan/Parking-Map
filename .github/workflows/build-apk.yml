@@ -81,7 +81,7 @@ jobs:
           gradle-
 
     - name: Install npm dependencies
-      run: npm ci
+      run: npm install --force
 
     - name: Build web app
       run: npm run build
