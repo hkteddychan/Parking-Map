@@ -10,7 +10,7 @@ import os
 import sys
 from datetime import datetime
 
-BASE = '/opt/data/parking-map'
+BASE = os.path.dirname(os.path.abspath(__file__))
 GITHUB_TOKEN = os.environ.get('GIT_TOKEN', '')
 
 HEADERS = {'User-Agent': 'Mozilla/5.0'}
