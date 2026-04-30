@@ -11,7 +11,7 @@ import sys
 from datetime import datetime
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-GITHUB_TOKEN = os.environ.get('GIT_TOKEN', '')
+GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN', '')
 
 HEADERS = {'User-Agent': 'Mozilla/5.0'}
 
@@ -141,7 +141,7 @@ def main():
         commit_msg = f"Auto-update: {datetime.now().strftime('%H:%M')}"
         os.system(f'git commit -m {repr(commit_msg)}')
         remote = f'https://{GITHUB_TOKEN}@github.com/hkteddychan/Parking-Map.git'
-        os.system(f'git push origin master > /dev/null 2>&1')
+        os.system(f'git push origin main > /dev/null 2>&1')
         print(f"  ✅ Pushed to GitHub")
     else:
         print(f"  ⚠️  No GIT_TOKEN, skipping push")
