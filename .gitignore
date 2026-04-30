@@ -19,3 +19,6 @@ npm-debug.log*
 # Temp files
 *.tmp
 *.swp
+
+# Python cache
+__pycache__/
