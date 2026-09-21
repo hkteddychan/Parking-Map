@@ -283,6 +283,23 @@
     .fab { width: 46px; height: 46px; font-size: 20px; }
   }
 </style>
+
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="stylesheet" href="assets/hkmap.css">
+  <style>
+[data-theme="dark"] .pk-name, [data-theme="dark"] .pk-vacancy-num, [data-theme="dark"] .pk-meta-item .value { color: var(--hk-text); }
+[data-theme="dark"] .pk-addr, [data-theme="dark"] .pk-meta-item .label, [data-theme="dark"] .last-update { color: var(--hk-text-3); }
+[data-theme="dark"] .stat-item, [data-theme="dark"] .pk-meta-item { background: var(--hk-surface-2); border-color: var(--hk-border); }
+[data-theme="dark"] .pk-badge.gray { background: var(--hk-surface-2); color: var(--hk-text-2); }
+[data-theme="dark"] .legend-card { background: var(--hk-surface); color: var(--hk-text); }
+[data-theme="dark"] .legend-item { color: var(--hk-text-2); }
+[data-theme="dark"] .legend-title { color: var(--hk-text-3); }
+
+</style>
+  <script src="assets/hkmap.js"></script>
 </head>
 <body>
 
@@ -296,7 +313,7 @@
 
 <div id="map"></div>
 
-<div class="controls">
+<div class="controls hk-controls-collapse">
   <div class="header-card">
     <h1>🚗 <span>香港泊位地圖</span></h1>
     <p>運輸署實時數據 · <span id="total-count">--</span> 個泊位</p>
@@ -584,7 +601,7 @@ function zoomToNearest(all) {
 // Runtime fetch now uses ONLY the merged parking-data.json from GitHub Pages.
 async function loadData() {
   try {
-    const jsonRes = await fetch('https://hkteddychan.github.io/Parking-Map/parking-data.json');
+    const jsonRes = await fetch('parking-data.json');
     const jsonData = await jsonRes.json();
     onstreetData = (jsonData.onstreet || []).map(os => ({ ...os, type: 'onstreet' }));
     carparkData = (jsonData.car_parks || []).map(cp => ({ ...cp, type: 'carpark' }));
@@ -597,7 +614,8 @@ async function loadData() {
     loadStopsInView();
   } catch (e) {
     console.error('Load error:', e);
-    document.querySelector('#loading p').textContent = '載入失敗，請刷新';
+    document.querySelector('#loading p').textContent = '載入失敗，請檢查網絡';
+    window.HKMap && HKMap.showError && HKMap.showError('⚠️ 泊位數據載入失敗', function(){ var b=document.getElementById('refreshBtn'); if(b) b.click(); });
   }
 }
 
@@ -730,6 +748,11 @@ style.textContent = `
 document.head.appendChild(style);
 
 init();
+</script>
+
+<script>
+  window.HKMap && window.HKMap.registerSW && window.HKMap.registerSW('sw.js');
+  window.HKMap && window.HKMap.mountThemeButton && window.HKMap.mountThemeButton(document.getElementById('map'));
 </script>
 </body>
 </html>

@@ -1,0 +1,206 @@
+/* ============================================================
+   HK Urban Map Design System — 香港生活地圖統一設計系統
+   Shared across all hkteddychan map repos (GitHub Pages).
+   Mobile-first · PWA-ready · Dark mode · Accessible
+   ============================================================ */
+
+:root {
+  /* Tokens — light */
+  --hk-font: 'Noto Sans HK', 'Noto Sans TC', -apple-system, BlinkMacSystemFont,
+             'Microsoft JhengHei', 'Segoe UI', sans-serif;
+  --hk-bg: #eef1f6;
+  --hk-surface: #ffffff;
+  --hk-surface-2: #f5f7fa;
+  --hk-text: #171a23;
+  --hk-text-2: #5b6472;
+  --hk-text-3: #9aa3b2;
+  --hk-border: rgba(23, 26, 35, 0.09);
+  --hk-primary: #4f46e5;
+  --hk-primary-2: #4338ca;
+  --hk-accent: #0e7490;
+  --hk-ok: #16a34a;
+  --hk-warn: #f59e0b;
+  --hk-danger: #dc2626;
+  --hk-shadow: 0 4px 20px rgba(17, 24, 39, 0.10), 0 1px 3px rgba(17,24,39,0.06);
+  --hk-shadow-lg: 0 10px 34px rgba(17, 24, 39, 0.16), 0 2px 8px rgba(17,24,39,0.08);
+  --hk-radius-sm: 8px;
+  --hk-radius: 14px;
+  --hk-radius-lg: 20px;
+  --hk-space: 8px;
+  --hk-touch: 44px;              /* WCAG 2.5.8 minimum target */
+  --hk-header-bg: linear-gradient(135deg, #4f46e5, #0e7490);
+  --hk-header-text: #ffffff;
+  --hk-tile-filter: none;
+}
+
+[data-theme="dark"] {
+  --hk-bg: #0e1116;
+  --hk-surface: #181d27;
+  --hk-surface-2: #202634;
+  --hk-text: #f2f4f8;
+  --hk-text-2: #a9b1c0;
+  --hk-text-3: #6b7484;
+  --hk-border: rgba(255, 255, 255, 0.10);
+  --hk-primary: #818cf8;
+  --hk-primary-2: #a5b4fc;
+  --hk-accent: #22d3ee;
+  --hk-ok: #4ade80;
+  --hk-warn: #fbbf24;
+  --hk-danger: #f87171;
+  --hk-shadow: 0 4px 20px rgba(0,0,0,0.45), 0 1px 3px rgba(0,0,0,0.3);
+  --hk-shadow-lg: 0 12px 38px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.4);
+  --hk-header-bg: linear-gradient(135deg, #312e81, #155e75);
+  --hk-tile-filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.92);
+}
+
+/* Auto dark-mode (no JS) */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) { color-scheme: dark; }
+  html:not([data-theme="light"]) body { background: var(--hk-bg); }
+}
+
+html[data-theme="dark"] { color-scheme: dark; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+body {
+  font-family: var(--hk-font);
+  background: var(--hk-bg);
+  color: var(--hk-text);
+}
+
+/* ---- Dark-mode leaflet tile handling ----
+   [data-theme="dark"] inverts the basemap; per-app JS may swap URL too. */
+[data-theme="dark"] .leaflet-tile-pane { filter: var(--hk-tile-filter); }
+
+/* ---- Unified map chrome: cards, pills, buttons ---- */
+.hk-card,
+.header-card, .type-card, .filter-card, .refresh-card,
+#legend, .legend, .update-info {
+  background: var(--hk-surface);
+  color: var(--hk-text);
+  border: 1px solid var(--hk-border);
+  border-radius: var(--hk-radius);
+  box-shadow: var(--hk-shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.header-card h1, .hk-card h1, #header h1 { color: var(--hk-text); }
+.header-card p { color: var(--hk-text-3); }
+
+.hk-pill, .pill, .type-pill, .facility-btn, .time-pill,
+.waste-pill, .date-btn, .sport-btn, .filter-chip {
+  min-height: var(--hk-touch);
+  border-radius: 999px;
+  font-family: var(--hk-font);
+  font-weight: 600;
+  border: 1.5px solid var(--hk-border);
+  background: var(--hk-surface-2);
+  color: var(--hk-text-2);
+  cursor: pointer;
+  transition: background .15s, color .15s, transform .1s, border-color .15s;
+}
+.hk-pill:hover, .pill:hover, .type-pill:hover,
+.facility-btn:hover, .time-pill:hover, .waste-pill:hover,
+.date-btn:hover, .sport-btn:hover, .filter-chip:hover {
+  border-color: var(--hk-primary);
+  color: var(--hk-primary);
+}
+
+/* Buttons & inputs */
+.hk-btn, .refresh-btn, #refresh-btn, #gps-btn, #sort-nearest-btn,
+.search-clear {
+  min-height: 40px;
+  border-radius: 10px;
+  font-family: var(--hk-font);
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+select, input[type="text"], input[type="search"], #search-input,
+#district-filter {
+  background: var(--hk-surface);
+  color: var(--hk-text);
+  border: 1px solid var(--hk-border);
+  border-radius: 8px;
+  min-height: 40px;
+  font-family: var(--hk-font);
+}
+select:focus-visible, input:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--hk-primary) 55%, transparent);
+  outline-offset: 2px;
+}
+
+/* Popups */
+.leaflet-popup-content-wrapper {
+  background: var(--hk-surface);
+  color: var(--hk-text);
+  border-radius: var(--hk-radius);
+  box-shadow: var(--hk-shadow-lg);
+}
+.leaflet-popup-content { font-family: var(--hk-font); }
+.leaflet-popup-close-button { color: var(--hk-text-2) !important; }
+.leaflet-container { font-family: var(--hk-font); background: var(--hk-bg); }
+
+/* Accessibility: respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001s !important;
+  }
+}
+
+/* Safe-area for notched phones */
+@supports (padding: max(0px)) {
+  #toast, .fab-stack, .legend-card, .beach-bottom-sheet,
+  #bottom-sheet { padding-bottom: max(env(safe-area-inset-bottom), 0px); }
+}
+
+/* ---- Error banner (added by hkmap.js) ---- */
+.hk-error {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 99999;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 12px 16px;
+  background: #b91c1c; color: #fff;
+  font-family: var(--hk-font); font-size: 13px; font-weight: 600;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.3);
+}
+.hk-error button {
+  margin-left: auto;
+  border: 1px solid rgba(255,255,255,0.6);
+  background: transparent; color: #fff;
+  border-radius: 8px; padding: 4px 12px; cursor: pointer;
+  font-weight: 700;
+}
+
+/* ---- Theme toggle FAB (bottom-left, safe area aware) ---- */
+.hk-theme-btn {
+  position: absolute;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  left: 14px;
+  z-index: 1100;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--hk-border);
+  background: var(--hk-surface);
+  color: var(--hk-text);
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: var(--hk-shadow);
+  display: flex; align-items: center; justify-content: center;
+}
+.hk-theme-btn:active { transform: scale(0.94); }
+
+/* ---- Mobile-first controls (collapsible) ---- */
+@media (max-width: 640px) {
+  .hk-controls-collapse .header-card { cursor: pointer; }
+  .hk-controls-collapse > *:not(.header-card) { display: none; }
+  .hk-controls-collapse.open > *:not(.header-card) { display: flex; }
+}
