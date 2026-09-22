@@ -37,3 +37,5 @@ jobs:
           commit_message: 'chore: auto-update parking data'
           file_pattern: parking-data.json
           skip_dirty: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
