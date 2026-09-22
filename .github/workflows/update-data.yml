@@ -3,7 +3,7 @@ name: Update Parking Data
 on:
   schedule:
     # Every 5 minutes — realtime parking availability from TD + NMOSPIOT
-    - cron: '*/5 * * * *'
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 permissions:
