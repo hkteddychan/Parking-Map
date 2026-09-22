@@ -104,7 +104,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc6p8.jpg",
-      "vacancy": 9,
+      "vacancy": 10,
       "type": "carpark",
       "status": null
     },
@@ -266,7 +266,7 @@
       "website_tc": "https://www.mackcarpark.com.hk/big5/carpark_info.php?id=31",
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdcp2.jpg",
-      "vacancy": 486,
+      "vacancy": 491,
       "type": "carpark",
       "status": null
     },
@@ -293,7 +293,7 @@
       "website_tc": "https://www.wilsonparking.com.hk/zh-hk/car_parks/detail/8",
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdcp3.jpg",
-      "vacancy": 121,
+      "vacancy": 101,
       "type": "carpark",
       "status": null
     },
@@ -347,7 +347,7 @@
       "website_tc": "https://www.wilsonparking.com.hk/zh-hk/car_parks/detail/295",
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdcp6.jpg",
-      "vacancy": 154,
+      "vacancy": 163,
       "type": "carpark",
       "status": null
     },
@@ -374,7 +374,7 @@
       "website_tc": "https://www.mackcarpark.com.hk/big5/carpark_info.php?id=27",
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdcp7.jpg",
-      "vacancy": 33,
+      "vacancy": 34,
       "type": "carpark",
       "status": null
     },
@@ -401,7 +401,7 @@
       "website_tc": "https://www.wilsonparking.com.hk/zh-hk/car_parks/detail/297",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdcp8.jpg",
-      "vacancy": 296,
+      "vacancy": 302,
       "type": "carpark",
       "status": null
     },
@@ -806,7 +806,7 @@
       "website_tc": "https://www.westk.hk/tc/visit/parking",
       "website_sc": "https://www.westk.hk/sc/visit/parking",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc17p2.jpg",
-      "vacancy": 203,
+      "vacancy": 205,
       "type": "carpark",
       "status": null
     },
@@ -1049,7 +1049,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/1016",
       "website_sc": "https://www.linkhk.com/sc/parking/1016",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p1016.jpg",
-      "vacancy": 21,
+      "vacancy": 11,
       "type": "carpark",
       "status": null
     },
@@ -1481,7 +1481,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/2116",
       "website_sc": "https://www.linkhk.com/sc/parking/2116",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p2116.jpg",
-      "vacancy": 28,
+      "vacancy": 24,
       "type": "carpark",
       "status": null
     },
@@ -1508,7 +1508,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/2117",
       "website_sc": "https://www.linkhk.com/sc/parking/2117",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p2117.jpg",
-      "vacancy": 24,
+      "vacancy": 21,
       "type": "carpark",
       "status": null
     },
@@ -1616,7 +1616,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/2121",
       "website_sc": "https://www.linkhk.com/sc/parking/2121",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p2121.jpg",
-      "vacancy": 9,
+      "vacancy": 8,
       "type": "carpark",
       "status": null
     },
@@ -1886,7 +1886,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/3306",
       "website_sc": "https://www.linkhk.com/sc/parking/3306",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p3306.jpg",
-      "vacancy": 30,
+      "vacancy": 27,
       "type": "carpark",
       "status": null
     },
@@ -1940,7 +1940,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/3309",
       "website_sc": "https://www.linkhk.com/sc/parking/3309",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p3309.jpg",
-      "vacancy": 18,
+      "vacancy": 12,
       "type": "carpark",
       "status": null
     },
@@ -1967,7 +1967,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/3311",
       "website_sc": "https://www.linkhk.com/sc/parking/3311",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p3311.jpg",
-      "vacancy": 30,
+      "vacancy": 18,
       "type": "carpark",
       "status": null
     },
@@ -2183,7 +2183,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/3443",
       "website_sc": "https://www.linkhk.com/sc/parking/3443",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p3443.jpg",
-      "vacancy": 30,
+      "vacancy": 29,
       "type": "carpark",
       "status": null
     },
@@ -2210,7 +2210,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/3444",
       "website_sc": "https://www.linkhk.com/sc/parking/3444",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p3444.jpg",
-      "vacancy": 30,
+      "vacancy": 29,
       "type": "carpark",
       "status": null
     },
@@ -2372,7 +2372,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/3521",
       "website_sc": "https://www.linkhk.com/sc/parking/3521",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p3521.jpg",
-      "vacancy": 27,
+      "vacancy": 24,
       "type": "carpark",
       "status": null
     },
@@ -2507,7 +2507,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc166p2.jpg",
-      "vacancy": 5,
+      "vacancy": 1,
       "type": "carpark",
       "status": null
     },
@@ -2993,7 +2993,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/4330",
       "website_sc": "https://www.linkhk.com/sc/parking/4330",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p4330.jpg",
-      "vacancy": 30,
+      "vacancy": 27,
       "type": "carpark",
       "status": null
     },
@@ -3047,7 +3047,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/4334",
       "website_sc": "https://www.linkhk.com/sc/parking/4334",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p4334.jpg",
-      "vacancy": 27,
+      "vacancy": 25,
       "type": "carpark",
       "status": null
     },
@@ -3398,7 +3398,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/5419",
       "website_sc": "https://www.linkhk.com/sc/parking/5419",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p5419.jpg",
-      "vacancy": 30,
+      "vacancy": 13,
       "type": "carpark",
       "status": null
     },
@@ -3425,7 +3425,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/5421",
       "website_sc": "https://www.linkhk.com/sc/parking/5421",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p5421.jpg",
-      "vacancy": 1,
+      "vacancy": 2,
       "type": "carpark",
       "status": null
     },
@@ -3695,7 +3695,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/6604",
       "website_sc": "https://www.linkhk.com/sc/parking/6604",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p6604.jpg",
-      "vacancy": 30,
+      "vacancy": 26,
       "type": "carpark",
       "status": null
     },
@@ -3938,7 +3938,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/6640",
       "website_sc": "https://www.linkhk.com/sc/parking/6640",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p6640.jpg",
-      "vacancy": 13,
+      "vacancy": 11,
       "type": "carpark",
       "status": null
     },
@@ -3992,7 +3992,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/6645",
       "website_sc": "https://www.linkhk.com/sc/parking/6645",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p6645.jpg",
-      "vacancy": 17,
+      "vacancy": 12,
       "type": "carpark",
       "status": null
     },
@@ -4127,7 +4127,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/7622",
       "website_sc": "https://www.linkhk.com/sc/parking/7622",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p7622.jpg",
-      "vacancy": 29,
+      "vacancy": 24,
       "type": "carpark",
       "status": null
     },
@@ -4235,7 +4235,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/7633",
       "website_sc": "https://www.linkhk.com/sc/parking/7633",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p7633.jpg",
-      "vacancy": 6,
+      "vacancy": 5,
       "type": "carpark",
       "status": null
     },
@@ -4343,7 +4343,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/7737",
       "website_sc": "https://www.linkhk.com/sc/parking/7737",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p7737.jpg",
-      "vacancy": 15,
+      "vacancy": 14,
       "type": "carpark",
       "status": null
     },
@@ -4370,7 +4370,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/7739",
       "website_sc": "https://www.linkhk.com/sc/parking/7739",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p7739.jpg",
-      "vacancy": 17,
+      "vacancy": 15,
       "type": "carpark",
       "status": null
     },
@@ -4397,7 +4397,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/7740",
       "website_sc": "https://www.linkhk.com/sc/parking/7740",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p7740.jpg",
-      "vacancy": 6,
+      "vacancy": 8,
       "type": "carpark",
       "status": null
     },
@@ -4505,7 +4505,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/8426",
       "website_sc": "https://www.linkhk.com/sc/parking/8426",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p8426.jpg",
-      "vacancy": 15,
+      "vacancy": 14,
       "type": "carpark",
       "status": null
     },
@@ -4748,7 +4748,7 @@
       "website_tc": "https://www.hongkongairport.com/chi/transport/parking.html",
       "website_sc": "https://www.hongkongairport.com/gb/transport/parking.html",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc2p1.jpg",
-      "vacancy": 238,
+      "vacancy": 246,
       "type": "carpark",
       "status": null
     },
@@ -4964,7 +4964,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdstt4p1.jpg",
-      "vacancy": 98,
+      "vacancy": 88,
       "type": "carpark",
       "status": null
     },
@@ -4991,7 +4991,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdstt11.jpg",
-      "vacancy": 198,
+      "vacancy": 179,
       "type": "carpark",
       "status": null
     },
@@ -5045,7 +5045,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc6p7.jpg",
-      "vacancy": 115,
+      "vacancy": 116,
       "type": "carpark",
       "status": null
     },
@@ -5072,7 +5072,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdstt15.jpg",
-      "vacancy": 2,
+      "vacancy": -1,
       "type": "carpark",
       "status": null
     },
@@ -5153,7 +5153,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc10p2.jpg",
-      "vacancy": 117,
+      "vacancy": 119,
       "type": "carpark",
       "status": null
     },
@@ -5180,7 +5180,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc10p3.jpg",
-      "vacancy": 71,
+      "vacancy": 73,
       "type": "carpark",
       "status": null
     },
@@ -5423,7 +5423,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc48p3.jpg",
-      "vacancy": 10,
+      "vacancy": 9,
       "type": "carpark",
       "status": null
     },
@@ -5666,7 +5666,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc286p1.jpg",
-      "vacancy": 7,
+      "vacancy": 6,
       "type": "carpark",
       "status": null
     },
@@ -5693,7 +5693,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc6p17.jpg",
-      "vacancy": 14,
+      "vacancy": 16,
       "type": "carpark",
       "status": null
     },
@@ -5963,7 +5963,7 @@
       "website_tc": "https://www.housingauthority.gov.hk/tc/global-elements/estate-locator/detail.html?propId=1&id=141887",
       "website_sc": "https://www.housingauthority.gov.hk/sc/global-elements/estate-locator/detail.html?propId=1&id=141887",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc6p18.jpg",
-      "vacancy": 39,
+      "vacancy": 40,
       "type": "carpark",
       "status": null
     },
@@ -6017,7 +6017,7 @@
       "website_tc": "https://www.housingauthority.gov.hk/tc/global-elements/estate-locator/detail.html?propId=1&id=132134",
       "website_sc": "https://www.housingauthority.gov.hk/sc/global-elements/estate-locator/detail.html?propId=1&id=132134",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc6p19.jpg",
-      "vacancy": 8,
+      "vacancy": -1,
       "type": "carpark",
       "status": null
     },
@@ -6044,7 +6044,7 @@
       "website_tc": "https://www.yuexiuaptparking.com/article-find-10.html?lang=tc",
       "website_sc": "https://www.yuexiuaptparking.com/article-find-10.html?lang=zh-cn",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc6p20.jpg",
-      "vacancy": 63,
+      "vacancy": 64,
       "type": "carpark",
       "status": null
     },
@@ -6071,7 +6071,7 @@
       "website_tc": "https://www.yuexiuaptparking.com/article-find-16.html?lang=tc",
       "website_sc": "https://www.yuexiuaptparking.com/article-find-16.html?lang=zh-cn",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc6p21.jpg",
-      "vacancy": 24,
+      "vacancy": 21,
       "type": "carpark",
       "status": null
     },
@@ -6152,7 +6152,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc32p2.jpg",
-      "vacancy": 49,
+      "vacancy": -1,
       "type": "carpark",
       "status": null
     },
@@ -6179,7 +6179,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc32p3.jpg",
-      "vacancy": 26,
+      "vacancy": 30,
       "type": "carpark",
       "status": null
     },
@@ -6206,7 +6206,7 @@
       "website_tc": "https://www.yuexiuaptparking.com/article-find-59.html?lang=tc",
       "website_sc": "https://www.yuexiuaptparking.com/article-find-59.html?lang=zh-cn",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc32p4.jpg",
-      "vacancy": 77,
+      "vacancy": 76,
       "type": "carpark",
       "status": null
     },
@@ -6287,7 +6287,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc349p1.jpg",
-      "vacancy": 0,
+      "vacancy": 2,
       "type": "carpark",
       "status": null
     },
@@ -6314,7 +6314,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc350p1.jpg",
-      "vacancy": 16,
+      "vacancy": 15,
       "type": "carpark",
       "status": null
     },
@@ -6368,7 +6368,7 @@
       "website_tc": "https://arcade.cyberport.hk/parkingoffers?l=zh-tw",
       "website_sc": "https://arcade.cyberport.hk/parkingoffers?l=zh-cn",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc113p2.jpg",
-      "vacancy": 198,
+      "vacancy": 200,
       "type": "carpark",
       "status": null
     },
@@ -6854,7 +6854,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/3514",
       "website_sc": "https://www.linkhk.com/sc/parking/3514",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p3514.jpg",
-      "vacancy": 9,
+      "vacancy": 20,
       "type": "carpark",
       "status": null
     },
@@ -6962,7 +6962,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/5536",
       "website_sc": "https://www.linkhk.com/sc/parking/5536",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p5536.jpg",
-      "vacancy": 12,
+      "vacancy": 9,
       "type": "carpark",
       "status": null
     },
@@ -7016,7 +7016,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/6643",
       "website_sc": "https://www.linkhk.com/sc/parking/6643",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p6643.jpg",
-      "vacancy": 28,
+      "vacancy": 22,
       "type": "carpark",
       "status": null
     },
@@ -7232,7 +7232,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdstt150.jpg",
-      "vacancy": 99,
+      "vacancy": 98,
       "type": "carpark",
       "status": null
     },
@@ -7448,7 +7448,7 @@
       "website_tc": "https://kinwinghong.weebly.com/",
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdstt46.jpg",
-      "vacancy": 47,
+      "vacancy": 48,
       "type": "carpark",
       "status": null
     },
@@ -7637,7 +7637,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc53p3.jpg",
-      "vacancy": 1,
+      "vacancy": 0,
       "type": "carpark",
       "status": null
     },
@@ -7880,7 +7880,7 @@
       "website_tc": "https://www.mtr.com.hk/ch/customer/services/aestations_carpark.html",
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc8p2.jpg",
-      "vacancy": 174,
+      "vacancy": 175,
       "type": "carpark",
       "status": null
     },
@@ -7988,7 +7988,7 @@
       "website_tc": "https://www.elementshk.com/tch/elements/location/parking",
       "website_sc": "https://www.elementshk.com/sch/elements/location/parking",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc8p10.jpg",
-      "vacancy": 671,
+      "vacancy": 734,
       "type": "carpark",
       "status": null
     },
@@ -8015,7 +8015,7 @@
       "website_tc": "https://www.popcorntko.com.hk/tch/poc/about_us/parking_info.jsp",
       "website_sc": "https://www.popcorntko.com.hk/sch/parking",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc8p8.jpg",
-      "vacancy": 82,
+      "vacancy": 81,
       "type": "carpark",
       "status": null
     },
@@ -8042,7 +8042,7 @@
       "website_tc": "https://www.maritimesquare.com/tch/ms/about_us/parking.jsp",
       "website_sc": "https://www.maritimesquare.com/sch/parking",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc8p7.jpg",
-      "vacancy": 197,
+      "vacancy": 214,
       "type": "carpark",
       "status": null
     },
@@ -8069,7 +8069,7 @@
       "website_tc": "https://www.maritimesquare.com/tch/ms/about_us/parking.jsp",
       "website_sc": "https://www.maritimesquare.com/sch/parking",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc8p12.jpg",
-      "vacancy": 43,
+      "vacancy": 54,
       "type": "carpark",
       "status": null
     },
@@ -8096,7 +8096,7 @@
       "website_tc": "https://www.paradise-mall.com.hk/tch/parking",
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc8p9.jpg",
-      "vacancy": 74,
+      "vacancy": 73,
       "type": "carpark",
       "status": null
     },
@@ -8366,7 +8366,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc373p1.jpg",
-      "vacancy": 10,
+      "vacancy": 11,
       "type": "carpark",
       "status": null
     },
@@ -8420,7 +8420,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc67p2.jpg",
-      "vacancy": 8,
+      "vacancy": 4,
       "type": "carpark",
       "status": null
     },
@@ -8528,7 +8528,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc360p1.jpg",
-      "vacancy": 3,
+      "vacancy": 2,
       "type": "carpark",
       "status": null
     },
@@ -8555,7 +8555,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc361p1.jpg",
-      "vacancy": 4,
+      "vacancy": 1,
       "type": "carpark",
       "status": null
     },
@@ -8582,7 +8582,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc69p1.jpg",
-      "vacancy": 14,
+      "vacancy": 13,
       "type": "carpark",
       "status": null
     },
@@ -8609,7 +8609,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc69p2.jpg",
-      "vacancy": 12,
+      "vacancy": 11,
       "type": "carpark",
       "status": null
     },
@@ -8636,7 +8636,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc69p3.jpg",
-      "vacancy": 17,
+      "vacancy": 16,
       "type": "carpark",
       "status": null
     },
@@ -8663,7 +8663,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc372p1.jpg",
-      "vacancy": 8,
+      "vacancy": 11,
       "type": "carpark",
       "status": null
     },
@@ -8717,7 +8717,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc49p4.jpg",
-      "vacancy": 84,
+      "vacancy": 85,
       "type": "carpark",
       "status": null
     },
@@ -8771,7 +8771,7 @@
       "website_tc": "https://www.impark.com.hk/carparkdetail/5d812f9b52bce44d030ef0bb",
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc62p1.jpg",
-      "vacancy": 12,
+      "vacancy": -1,
       "type": "carpark",
       "status": null
     },
@@ -8852,7 +8852,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc74p2.jpg",
-      "vacancy": 15,
+      "vacancy": 6,
       "type": "carpark",
       "status": null
     },
@@ -8960,7 +8960,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc49p1.jpg",
-      "vacancy": 501,
+      "vacancy": 503,
       "type": "carpark",
       "status": null
     },
@@ -8987,7 +8987,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc49p2.jpg",
-      "vacancy": 515,
+      "vacancy": 516,
       "type": "carpark",
       "status": null
     },
@@ -9014,7 +9014,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc243p1.jpg",
-      "vacancy": 1,
+      "vacancy": -1,
       "type": "carpark",
       "status": null
     },
@@ -9122,7 +9122,7 @@
       "website_tc": "https://www.sino-propertyservices.com/tc/parking-services/portfolio",
       "website_sc": "https://www.sino-propertyservices.com/sc/parking-services/portfolio",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc25p46.jpg",
-      "vacancy": 53,
+      "vacancy": 51,
       "type": "carpark",
       "status": null
     },
@@ -9149,7 +9149,7 @@
       "website_tc": "https://www.hzmbparking.com.hk/zh-hk/car-park-information",
       "website_sc": "https://www.hzmbparking.com.hk/zh-cn/car-park-information",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc15p1.jpg",
-      "vacancy": 128,
+      "vacancy": 133,
       "type": "carpark",
       "status": null
     },
@@ -9176,7 +9176,7 @@
       "website_tc": "https://www.hzmbparking.com.hk/zh-hk/car-park-information",
       "website_sc": "https://www.hzmbparking.com.hk/zh-cn/car-park-information",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc15p2.jpg",
-      "vacancy": 82,
+      "vacancy": 85,
       "type": "carpark",
       "status": null
     },
@@ -9284,7 +9284,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc51p2.jpg",
-      "vacancy": 17,
+      "vacancy": 18,
       "type": "carpark",
       "status": null
     },
@@ -9473,7 +9473,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc81p5.jpg",
-      "vacancy": 18,
+      "vacancy": 20,
       "type": "carpark",
       "status": null
     },
@@ -9500,7 +9500,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc81p4.jpg",
-      "vacancy": 1,
+      "vacancy": 3,
       "type": "carpark",
       "status": null
     },
@@ -9581,7 +9581,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc380p1.jpg",
-      "vacancy": 1,
+      "vacancy": 0,
       "type": "carpark",
       "status": null
     },
@@ -9716,7 +9716,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc74p11.jpg",
-      "vacancy": 8,
+      "vacancy": 7,
       "type": "carpark",
       "status": null
     },
@@ -9824,7 +9824,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc344p1.jpg",
-      "vacancy": 46,
+      "vacancy": 48,
       "type": "carpark",
       "status": null
     },
@@ -9851,7 +9851,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc353p1.jpg",
-      "vacancy": 0,
+      "vacancy": 1,
       "type": "carpark",
       "status": null
     },
@@ -9878,7 +9878,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc390p1.jpg",
-      "vacancy": 14,
+      "vacancy": -1,
       "type": "carpark",
       "status": null
     },
@@ -9932,7 +9932,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdstt59.jpg",
-      "vacancy": 13,
+      "vacancy": 14,
       "type": "carpark",
       "status": null
     },
@@ -10013,7 +10013,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc74p14.jpg",
-      "vacancy": 115,
+      "vacancy": 113,
       "type": "carpark",
       "status": null
     },
@@ -10040,7 +10040,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc96p1.jpg",
-      "vacancy": 8,
+      "vacancy": 15,
       "type": "carpark",
       "status": null
     },
@@ -10094,7 +10094,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdstt72.jpg",
-      "vacancy": 3,
+      "vacancy": 2,
       "type": "carpark",
       "status": null
     },
@@ -10175,7 +10175,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc119.jpg",
-      "vacancy": 30,
+      "vacancy": 29,
       "type": "carpark",
       "status": null
     },
@@ -10202,7 +10202,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc118p1.jpg",
-      "vacancy": 20,
+      "vacancy": 21,
       "type": "carpark",
       "status": null
     },
@@ -10337,7 +10337,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc273p1.jpg",
-      "vacancy": 6,
+      "vacancy": -1,
       "type": "carpark",
       "status": null
     },
@@ -10526,7 +10526,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "",
-      "vacancy": 35,
+      "vacancy": 34,
       "type": "carpark",
       "status": null
     },
@@ -10634,7 +10634,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc126p1.jpg",
-      "vacancy": 16,
+      "vacancy": 15,
       "type": "carpark",
       "status": null
     },
@@ -10742,7 +10742,7 @@
       "website_tc": "https://www.hkstp.org/zh-hk/visit/parking",
       "website_sc": "https://www.hkstp.org/zh-cn/visit/parking",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc103p2.jpg",
-      "vacancy": 262,
+      "vacancy": 260,
       "type": "carpark",
       "status": null
     },
@@ -10850,7 +10850,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc50p8.jpg",
-      "vacancy": 40,
+      "vacancy": 43,
       "type": "carpark",
       "status": null
     },
@@ -10877,7 +10877,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdstt75.jpg",
-      "vacancy": 28,
+      "vacancy": 29,
       "type": "carpark",
       "status": null
     },
@@ -10931,7 +10931,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc121p1.jpg",
-      "vacancy": 650,
+      "vacancy": 653,
       "type": "carpark",
       "status": null
     },
@@ -11012,7 +11012,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc115p1.jpg",
-      "vacancy": 8,
+      "vacancy": 12,
       "type": "carpark",
       "status": null
     },
@@ -11039,7 +11039,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc124p1.jpg",
-      "vacancy": 39,
+      "vacancy": 41,
       "type": "carpark",
       "status": null
     },
@@ -11066,7 +11066,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc92p1.jpg",
-      "vacancy": 19,
+      "vacancy": 16,
       "type": "carpark",
       "status": null
     },
@@ -11228,7 +11228,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc129p2.jpg",
-      "vacancy": 6,
+      "vacancy": 7,
       "type": "carpark",
       "status": null
     },
@@ -11255,7 +11255,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc129p3.jpg",
-      "vacancy": 8,
+      "vacancy": 7,
       "type": "carpark",
       "status": null
     },
@@ -11363,7 +11363,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc98p1.jpg",
-      "vacancy": 25,
+      "vacancy": 23,
       "type": "carpark",
       "status": null
     },
@@ -11417,7 +11417,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc130p3.jpg",
-      "vacancy": 2,
+      "vacancy": 1,
       "type": "carpark",
       "status": null
     },
@@ -11471,7 +11471,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc142p1.jpg",
-      "vacancy": 9,
+      "vacancy": 8,
       "type": "carpark",
       "status": null
     },
@@ -11498,7 +11498,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc151p1.jpg",
-      "vacancy": 43,
+      "vacancy": 44,
       "type": "carpark",
       "status": null
     },
@@ -11606,7 +11606,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc93p1.jpg",
-      "vacancy": 22,
+      "vacancy": 4,
       "type": "carpark",
       "status": null
     },
@@ -11660,7 +11660,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc127p1.jpg",
-      "vacancy": 2,
+      "vacancy": -1,
       "type": "carpark",
       "status": null
     },
@@ -11768,7 +11768,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc148p1.jpg",
-      "vacancy": 4,
+      "vacancy": 3,
       "type": "carpark",
       "status": null
     },
@@ -11930,7 +11930,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc10p6.jpg",
-      "vacancy": 23,
+      "vacancy": 22,
       "type": "carpark",
       "status": null
     },
@@ -12038,7 +12038,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc6p25.jpg",
-      "vacancy": 0,
+      "vacancy": -1,
       "type": "carpark",
       "status": null
     },
@@ -12173,7 +12173,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc150p1.jpg",
-      "vacancy": 15,
+      "vacancy": 13,
       "type": "carpark",
       "status": null
     },
@@ -12227,7 +12227,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdstt100.jpg",
-      "vacancy": 22,
+      "vacancy": 20,
       "type": "carpark",
       "status": null
     },
@@ -12254,7 +12254,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc177p1.jpg",
-      "vacancy": 44,
+      "vacancy": 45,
       "type": "carpark",
       "status": null
     },
@@ -12281,7 +12281,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc248p1.jpg",
-      "vacancy": 41,
+      "vacancy": 34,
       "type": "carpark",
       "status": null
     },
@@ -12308,7 +12308,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc147p1.jpg",
-      "vacancy": 23,
+      "vacancy": 25,
       "type": "carpark",
       "status": null
     },
@@ -12551,7 +12551,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdstt69.jpg",
-      "vacancy": 13,
+      "vacancy": 11,
       "type": "carpark",
       "status": null
     },
@@ -12767,7 +12767,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc386p1.jpg",
-      "vacancy": 209,
+      "vacancy": 207,
       "type": "carpark",
       "status": null
     },
@@ -12794,7 +12794,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdstt132.jpg",
-      "vacancy": 5,
+      "vacancy": 7,
       "type": "carpark",
       "status": null
     },
@@ -12875,7 +12875,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdstt143.jpg",
-      "vacancy": 156,
+      "vacancy": 153,
       "type": "carpark",
       "status": null
     },
@@ -13010,7 +13010,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdstt128.jpg",
-      "vacancy": 91,
+      "vacancy": 92,
       "type": "carpark",
       "status": null
     },
@@ -13145,7 +13145,7 @@
       "website_tc": "https://www.linkhk.com/tc/parking/1010",
       "website_sc": "https://www.linkhk.com/sc/parking/1010",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc14p8900.jpg",
-      "vacancy": 0,
+      "vacancy": 1,
       "type": "carpark",
       "status": null
     },
@@ -13280,7 +13280,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc292p1.jpg",
-      "vacancy": 4,
+      "vacancy": -1,
       "type": "carpark",
       "status": null
     },
@@ -13577,7 +13577,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc314p1.jpg",
-      "vacancy": 88,
+      "vacancy": 91,
       "type": "carpark",
       "status": null
     },
@@ -13604,7 +13604,7 @@
       "website_tc": "https://www.vwalk.com.hk/tch/access/parking",
       "website_sc": "https://www.vwalk.com.hk/sch/access/parking",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc317p1.jpg",
-      "vacancy": 75,
+      "vacancy": -1,
       "type": "carpark",
       "status": null
     },
@@ -13820,7 +13820,7 @@
       "website_tc": "https://www.yohomall.hk/zh-hk/driving-info",
       "website_sc": "https://www.yohomall.hk/zh-cn/driving-info",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc321p1.jpg",
-      "vacancy": 67,
+      "vacancy": 65,
       "type": "carpark",
       "status": null
     },
@@ -13874,7 +13874,7 @@
       "website_tc": "https://www.vcity.com.hk/tch/parking/parking.jsp",
       "website_sc": "https://www.vcity.com.hk/sch/parking/parking.jsp",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc330p1.jpg",
-      "vacancy": 92,
+      "vacancy": 94,
       "type": "carpark",
       "status": null
     },
@@ -13982,7 +13982,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc290p1.jpg",
-      "vacancy": 6,
+      "vacancy": 7,
       "type": "carpark",
       "status": null
     },
@@ -14117,7 +14117,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc291p1.jpg",
-      "vacancy": 0,
+      "vacancy": -1,
       "type": "carpark",
       "status": null
     },
@@ -14198,7 +14198,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc295p1.jpg",
-      "vacancy": 15,
+      "vacancy": 13,
       "type": "carpark",
       "status": null
     },
@@ -14279,7 +14279,7 @@
       "website_tc": "",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc297p1.jpg",
-      "vacancy": 0,
+      "vacancy": 1,
       "type": "carpark",
       "status": null
     },
@@ -14576,7 +14576,7 @@
       "website_tc": "https://www.goparksaisha.hk/tc/visit-go-park/parking/",
       "website_sc": "https://www.goparksaisha.hk/sc/visit-go-park/parking/",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc367p1.jpg",
-      "vacancy": 43,
+      "vacancy": 41,
       "type": "carpark",
       "status": null
     },
@@ -14765,7 +14765,7 @@
       "website_tc": "https://www.wilsonparking.com.hk/zh/car_parks/detail/174",
       "website_sc": "",
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc16p575.jpg",
-      "vacancy": 127,
+      "vacancy": 126,
       "type": "carpark",
       "status": null
     },
@@ -14846,7 +14846,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc394p1.jpg",
-      "vacancy": 12,
+      "vacancy": 10,
       "type": "carpark",
       "status": null
     },
@@ -14900,7 +14900,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc402p1.jpg",
-      "vacancy": 158,
+      "vacancy": 156,
       "type": "carpark",
       "status": null
     },
@@ -14954,7 +14954,7 @@
       "website_tc": null,
       "website_sc": null,
       "carpark_photo": "http://resource.data.one.gov.hk/td/carpark/tdc404p1.jpg",
-      "vacancy": 333,
+      "vacancy": 327,
       "type": "carpark",
       "status": null
     }
@@ -15787,10 +15787,10 @@
       "district_tc": "北區",
       "district_en": "North District",
       "region_tc": "新界",
-      "status": "O",
-      "vacancy": 0,
+      "status": "V",
+      "vacancy": 1,
       "type": "onstreet",
-      "last_change": "22/9/2026 17:22:31",
+      "last_change": "23/9/2026 4:8:26",
       "vehicle_type": "A"
     },
     {
@@ -15923,10 +15923,10 @@
       "district_tc": "北區",
       "district_en": "North District",
       "region_tc": "新界",
-      "status": "O",
-      "vacancy": 0,
+      "status": "V",
+      "vacancy": 1,
       "type": "onstreet",
-      "last_change": "21/9/2026 14:58:22",
+      "last_change": "23/9/2026 3:41:48",
       "vehicle_type": "A"
     },
     {
@@ -17215,10 +17215,10 @@
       "district_tc": "沙田區",
       "district_en": "Sha Tin District",
       "region_tc": "新界",
-      "status": "O",
-      "vacancy": 0,
+      "status": "V",
+      "vacancy": 1,
       "type": "onstreet",
-      "last_change": "23/9/2026 0:46:6",
+      "last_change": "23/9/2026 1:34:51",
       "vehicle_type": "D"
     },
     {
@@ -17317,10 +17317,10 @@
       "district_tc": "沙田區",
       "district_en": "Sha Tin District",
       "region_tc": "新界",
-      "status": "V",
-      "vacancy": 1,
+      "status": "O",
+      "vacancy": 0,
       "type": "onstreet",
-      "last_change": "22/9/2026 19:28:19",
+      "last_change": "23/9/2026 3:39:25",
       "vehicle_type": "D"
     },
     {
