@@ -134,17 +134,5 @@ def main():
     print(f"  ✅ Saved {len(car_parks)} carparks, {len(onstreet)} onstreet | {size:,} bytes")
     print(f"  CP: {green}有位, {red}滿, {gray}無 | OS: {os_v}V, {os_o}O")
 
-    # Git commit + push (only if GIT_TOKEN available)
-    if GITHUB_TOKEN:
-        os.chdir(BASE)
-        os.system('git add parking-data.json')
-        commit_msg = f"Auto-update: {datetime.now().strftime('%H:%M')}"
-        os.system(f'git commit -m {repr(commit_msg)}')
-        remote = f'https://{GITHUB_TOKEN}@github.com/hkteddychan/Parking-Map.git'
-        os.system(f'git push origin main > /dev/null 2>&1')
-        print(f"  ✅ Pushed to GitHub")
-    else:
-        print(f"  ⚠️  No GIT_TOKEN, skipping push")
-
 if __name__ == '__main__':
     main()
