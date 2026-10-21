@@ -32,6 +32,7 @@ jobs:
         run: python update_parking_data.py
 
       - name: Commit and push if changed
+        id: commit
         run: |
           if [ -n "$(git status --porcelain)" ]; then
             git config user.name "github-actions[bot]"
@@ -39,7 +40,19 @@ jobs:
             git add parking-data.json
             git commit -m "chore: auto-update parking data"
             git push origin main
+            echo "changed=true" >> "$GITHUB_OUTPUT"
             echo "Pushed data update"
           else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "No data change"
           fi
+
+      - name: Trigger APK rebuild
+        if: steps.commit.outputs.changed == 'true'
+        run: |
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/build-apk.yml/dispatches" \
+            -d '{"ref":"main"}' \
+            -w "APK build triggered (HTTP %{http_code})\n"
