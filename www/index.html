@@ -382,7 +382,7 @@
     <div class="filter-label">車輛類型</div>
     <div class="filter-pills">
       <div class="pill active" data-vt="all">全部車型</div>
-      <div class="pill" data-vt="mc">🏍️ 電單車位</div>
+      <div class="pill" data-vt="mc">🏍️ 可泊電單車</div>
     </div>
   </div>
 
@@ -784,9 +784,12 @@ function loadStopsInView() {
       }
     }
 
-    // 電單車 filter
+    // 電單車 filter：數據冇「限電單車」欄位（type 全部 carpark/onstreet；onstreet vehicle_type 只有 A/D/C）
+    // → 定義為「可泊電單車」：onstreet vehicle_type 非 C(禁行) 或 car_park 收費備註含電單車
     if (currentVehicle === 'mc') {
-      const isMc = cp.vehicle_type === 'M' || (cp.name_tc || '').includes('電單車') || (cp.remark_tc || '').includes('電單車');
+      const isMc = cp.type === 'onstreet'
+        ? (cp.vehicle_type === 'A' || cp.vehicle_type === 'D' || cp.vehicle_type === 'M')
+        : ((cp.remark_tc || '').includes('電單車') || (cp.name_tc || '').includes('電單車'));
       if (!isMc) return;
     }
 
