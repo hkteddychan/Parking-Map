@@ -74,6 +74,7 @@
   .pill[data-v=red].active { background: linear-gradient(135deg, #ef4444, #dc2626); }
   .pill[data-v=gray].active { background: linear-gradient(135deg, #9ca3af, #6b7280); }
   .pill[data-v=all].active { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+  .pill[data-v=unknown].active { background: linear-gradient(135deg, #f59e0b, #d97706); }
   .type-pill {
     flex: 1; padding: 8px 8px; border-radius: 10px; font-size: 12px; font-weight: 800;
     text-align: center; border: 2px solid transparent; background: #f1f3f5; color: #6b7280;
@@ -170,6 +171,7 @@
   .pk-icon-inner.green { background: linear-gradient(135deg, #10b981, #059669); }
   .pk-icon-inner.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
   .pk-icon-inner.gray { background: linear-gradient(135deg, #9ca3af, #6b7280); }
+  .pk-icon-inner.unknown { background: linear-gradient(135deg, #f59e0b, #d97706); }
 
   .os-icon { width: 22px !important; height: 22px !important; }
   .os-icon-inner {
@@ -183,6 +185,7 @@
   .os-icon-inner.green { background: #10b981; }
   .os-icon-inner.red { background: #ef4444; }
   .os-icon-inner.gray { background: #9ca3af; }
+  .os-icon-inner.unknown { background: #f59e0b; }
 
   /* === POPUP === */
   .pk-popup .leaflet-popup-content-wrapper {
@@ -211,6 +214,8 @@
   .pk-badge.green { background: #d1fae5; color: #059669; }
   .pk-badge.red { background: #fee2e2; color: #dc2626; }
   .pk-badge.gray { background: #f3f4f6; color: #6b7280; }
+  .pk-badge.unknown { background: #fef3c7; color: #b45309; }
+  .pk-badge.fav { background: #fef9c3; color: #ca8a04; }
   .pk-lastupdate { font-size: 10px; color: #ccc; margin-top: 8px; font-weight: 600; }
   .leaflet-popup-tip { display: none; }
 
@@ -242,9 +247,27 @@
   .legend-p.green { background: #10b981; }
   .legend-p.red { background: #ef4444; }
   .legend-p.gray { background: #9ca3af; }
+  .legend-p.unknown { background: #f59e0b; }
   .legend-d.green { background: #10b981; }
   .legend-d.red { background: #ef4444; }
   .legend-d.gray { background: #9ca3af; }
+  .legend-d.unknown { background: #f59e0b; }
+
+  /* District + extra filters */
+  .district-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .district-pill {
+    padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: 700;
+    border: 2px solid transparent; cursor: pointer; transition: all 0.2s;
+    background: #f1f3f5; color: #6b7280;
+  }
+  .district-pill:hover { background: #e5e7eb; }
+  .district-pill.active { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; box-shadow: 0 2px 8px rgba(139,92,246,0.35); }
+
+  /* Trend arrow in popup */
+  .pk-trend { font-size: 12px; font-weight: 700; color: #6b7280; margin-top: 6px; }
+  .pk-trend .up { color: #10b981; }
+  .pk-trend .down { color: #ef4444; }
+  .pk-trend .flat { color: #9ca3af; }
 
   /* === LOADING === */
   #loading {
@@ -340,6 +363,26 @@
       <div class="pill" data-v="green">有空位</div>
       <div class="pill" data-v="red">已滿</div>
       <div class="pill" data-v="gray">無數據</div>
+      <div class="pill" data-v="unknown">🟡 未知</div>
+    </div>
+  </div>
+
+  <div class="filter-card">
+    <div class="filter-label">地區</div>
+    <div class="district-pills">
+      <div class="district-pill active" data-d="all">全港</div>
+      <div class="district-pill" data-d="香港島">🏝️ 香港島</div>
+      <div class="district-pill" data-d="九龍">🏙️ 九龍</div>
+      <div class="district-pill" data-d="新界">🌄 新界</div>
+      <div class="district-pill" data-d="fav">⭐ 收藏</div>
+    </div>
+  </div>
+
+  <div class="filter-card">
+    <div class="filter-label">車輛類型</div>
+    <div class="filter-pills">
+      <div class="pill active" data-vt="all">全部車型</div>
+      <div class="pill" data-vt="mc">🏍️ 電單車位</div>
     </div>
   </div>
 
@@ -354,9 +397,11 @@
   <div class="legend-item"><div class="legend-p green">P</div>停車場·有空位</div>
   <div class="legend-item"><div class="legend-p red">P</div>停車場·已滿</div>
   <div class="legend-item"><div class="legend-p gray">P</div>停車場·無數據</div>
+  <div class="legend-item"><div class="legend-p unknown">P</div>停車場·未知</div>
   <div class="legend-item"><div class="legend-d green"></div>街上泊位·空</div>
   <div class="legend-item"><div class="legend-d red"></div>街上泊位·佔用</div>
   <div class="legend-item"><div class="legend-d gray"></div>街上泊位·不可用</div>
+  <div class="legend-item"><div class="legend-d unknown"></div>街上泊位·未知</div>
 </div>
 
 <div class="fab-stack">
@@ -370,6 +415,9 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
 <script>
 // ============ CONFIG ============
 const HK_CENTER = [22.3193, 114.1694];
@@ -377,13 +425,75 @@ const DEFAULT_ZOOM = 13;
 const NEAREST_SEARCH_ZOOM = 16;
 
 // ============ STATE ============
-let map, markers = [];
+let map, markers = [], clusterGroup = null;
 let carparkData = [], onstreetData = [];
 let currentFilter = 'all';
 let currentType = 'both';
+let currentDistrict = 'all';
+let currentVehicle = 'all';
 let userLatLng = null;
 let userMarker = null;
 let userAccuracy = null;
+
+// ============ FAVORITES (localStorage) ============
+const FAV_KEY = 'hkparking_favorites';
+function getFavorites() {
+  try { return JSON.parse(localStorage.getItem(FAV_KEY)) || []; } catch (e) { return []; }
+}
+function saveFavorites(favs) {
+  try { localStorage.setItem(FAV_KEY, JSON.stringify(favs)); } catch (e) {}
+}
+function isFavorite(id) { return getFavorites().includes(id); }
+function toggleFavorite(id) {
+  let favs = getFavorites();
+  const i = favs.indexOf(id);
+  if (i >= 0) favs.splice(i, 1); else favs.push(id);
+  saveFavorites(favs);
+  return i < 0;   // returns true=added
+}
+
+// ============ VACANCY TREND (last 30 min, localStorage) ============
+const TREND_KEY = 'hkparking_trend';
+function recordTrend(records) {
+  // records: [{id, t, v}] — 記每場最近一次 vacancy
+  if (!records || !records.length) return;
+  let all = [];
+  try { all = JSON.parse(localStorage.getItem(TREND_KEY)) || []; } catch (e) {}
+  const now = Date.now();
+  const cutoff = now - 30 * 60 * 1000;
+  all = all.filter(x => now - x.t < cutoff + 60 * 60 * 1000);   // keep ~1h for smoothing
+  const byId = {};
+  records.forEach(r => { byId[r.id] = r; });
+  Object.keys(byId).forEach(id => {
+    const rec = byId[id];
+    const prev = all.filter(x => x.id === id && now - x.t <= 30 * 60 * 1000);
+    // 每場最多 6 個點
+    const pts = all.filter(x => x.id === id);
+    if (pts.length >= 6) all = all.filter(x => x.id !== id);
+    all.push({ id, t: now, v: rec.v, n: (pts.length || 0) + 1 });
+  });
+  // 只保留 30 分鐘內+近期
+  all = all.filter(x => now - x.t <= 40 * 60 * 1000);
+  try { localStorage.setItem(TREND_KEY, JSON.stringify(all)); } catch (e) {}
+}
+function getTrend(id) {
+  try {
+    const all = JSON.parse(localStorage.getItem(TREND_KEY)) || [];
+    const now = Date.now();
+    return all.filter(x => x.id === id && now - x.t <= 30 * 60 * 1000)
+              .sort((a, b) => a.t - b.t);
+  } catch (e) { return []; }
+}
+function trendHTML(cp) {
+  if (cp.type !== 'carpark') return '';
+  const pts = getTrend(cp.park_id || cp.id);
+  if (pts.length < 2) return '';
+  const first = pts[0].v, last = pts[pts.length - 1].v;
+  const diff = last - first;
+  const arrow = diff > 0 ? `<span class="up">▲ +${diff}</span>` : diff < 0 ? `<span class="down">▼ ${diff}</span>` : `<span class="flat">＝ 0</span>`;
+  const hist = pts.map(p => p.v).join(' → ');
+  return `<div class="pk-trend">📈 30分鐘趨勢: ${arrow} <span style="color:#bbb;font-weight:600">(${hist})</span></div>`;
+}
 
 // ============ TOAST ============
 function showToast(msg, duration = 2500) {
@@ -398,6 +508,7 @@ function getStatus(cp) {
   if (cp.type === 'onstreet') {
     if (cp.status === 'V') return 'green';
     if (cp.status === 'O') return 'red';
+    if (cp.status === 'NU') return 'unknown';   // NU = 感應器存在但無數據 → 黃色「未知」
     return 'gray';
   }
   const v = cp.vacancy;
@@ -436,8 +547,17 @@ async function init() {
   map.on('moveend', loadStopsInView);
   map.on('zoomend', loadStopsInView);
 
+  // Marker cluster（市區 zoom out 聚合）
+  clusterGroup = L.markerClusterGroup({
+    maxClusterRadius: 48,
+    showCoverageOnHover: false,
+    spiderfyOnMaxZoom: true
+  });
+  map.addLayer(clusterGroup);
+
   setupFilterPills();
   setupTypePills();
+  setupDistrictPills();
   setupFabs();
 
   // Refresh button
@@ -601,14 +721,32 @@ function zoomToNearest(all) {
 // Runtime fetch now uses ONLY the merged parking-data.json from GitHub Pages.
 async function loadData() {
   try {
-    const jsonRes = await fetch('parking-data.json');
+    // APK / Capacitor live fetch：直連 GitHub Pages 嘅 parking-data.json（每次開都最新）
+    // 喺 Android WebView 度相對路徑 `parking-data.json` 會指去本機 → 用絕對 URL 指向線上
+    const dataUrl = (
+      location.hostname === 'localhost' || location.protocol === 'file:' || !location.hostname
+    ) ? 'https://hkteddychan.github.io/parking-map/parking-data.json' : 'parking-data.json';
+    const jsonRes = await fetch(dataUrl, { cache: 'no-store' });
     const jsonData = await jsonRes.json();
     onstreetData = (jsonData.onstreet || []).map(os => ({ ...os, type: 'onstreet' }));
     carparkData = (jsonData.car_parks || []).map(cp => ({ ...cp, type: 'carpark' }));
 
     const now = new Date();
-    document.getElementById('last-update').textContent =
-      `實時 · ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+    // 數據新鮮度：用 Last-Modified header（GitHub Pages 提供）計數據本身嘅生成時間
+    const lm = jsonRes.headers.get('last-modified') || jsonRes.headers.get('Last-Modified');
+    let freshness = `實時 · ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+    if (lm) {
+      try {
+        const lmDate = new Date(lm);
+        const mins = Math.floor((now - lmDate) / 60000);
+        freshness = mins < 1 ? '數據更新 · 啱啱' : mins < 60 ? `數據更新於 ${mins} 分鐘前` : `數據更新於 ${Math.floor(mins/60)} 小時前`;
+        if (mins > 30) freshness += ' ⚠️ 數據可能過時';
+      } catch (e) {}
+    }
+    document.getElementById('last-update').textContent = freshness;
+
+    // 記錄 30 分鐘趨勢（每日志）
+    recordTrend(carparkData.map(cp => ({ id: cp.park_id || cp.id, v: (typeof cp.vacancy === 'number' ? cp.vacancy : -1) })));
 
     updateStats();
     loadStopsInView();
@@ -622,15 +760,36 @@ async function loadData() {
 // ============ RENDER ============
 function loadStopsInView() {
   const bounds = map.getBounds();
+  // 清 marker（含 cluster）
   markers.forEach(m => map.removeLayer(m));
   markers = [];
+  if (clusterGroup) clusterGroup.clearLayers();
 
   const all = currentType === 'both' ? [...carparkData, ...onstreetData]
     : currentType === 'carpark' ? carparkData : onstreetData;
 
+  const favs = getFavorites();
   all.forEach(cp => {
     const lat = parseFloat(cp.latitude), lng = parseFloat(cp.longitude);
     if (!lat || !lng) return;
+
+    // 地區 filter
+    if (currentDistrict !== 'all') {
+      if (currentDistrict === 'fav') {
+        if (!favs.includes(cp.park_id || cp.id)) return;
+      } else {
+        const region = cp.region_tc || (cp.region_en || '');
+        const d = cp.district_tc || '';
+        if (region !== currentDistrict && !(currentDistrict === '香港島' && ['中西區','灣仔區','東區','南區'].includes(d)) && !(currentDistrict === '九龍' && ['油尖旺區','深水埗區','九龍城區','黃大仙區','觀塘區'].includes(d)) && !(currentDistrict === '新界' && !['中西區','灣仔區','東區','南區','油尖旺區','深水埗區','九龍城區','黃大仙區','觀塘區'].includes(d))) return;
+      }
+    }
+
+    // 電單車 filter
+    if (currentVehicle === 'mc') {
+      const isMc = cp.vehicle_type === 'M' || (cp.name_tc || '').includes('電單車') || (cp.remark_tc || '').includes('電單車');
+      if (!isMc) return;
+    }
+
     if (!bounds.contains([lat, lng])) return;
 
     const status = getStatus(cp);
@@ -638,7 +797,8 @@ function loadStopsInView() {
 
     const m = L.marker([lat, lng], { icon: getIcon(cp, status) });
     m.bindPopup(createPopup(cp, status), { className: 'pk-popup', maxWidth: 320 });
-    m.addTo(map);
+    if (clusterGroup) clusterGroup.addLayer(m);
+    else m.addTo(map);
     markers.push(m);
   });
 }
@@ -650,8 +810,10 @@ function createPopup(cp, status) {
     : (cp.displayAddress_tc || cp.displayAddress_en || '');
 
   if (cp.type === 'onstreet') {
-    const statusText = cp.status === 'V' ? '空置' : cp.status === 'O' ? '已被佔用' : '不可用';
-    const icon = cp.status === 'V' ? '✓' : cp.status === 'O' ? '✗' : '?';
+    const statusText = cp.status === 'V' ? '空置' : cp.status === 'O' ? '已被佔用' : cp.status === 'NU' ? '未知（感應器無數據）' : '不可用';
+    const icon = cp.status === 'V' ? '✓' : cp.status === 'O' ? '✗' : cp.status === 'NU' ? '?' : '—';
+    const id = cp.park_id || cp.id;
+    const faved = isFavorite(id) ? '已收藏 ⭐' : '收藏 ☆';
     return `
     <div class="pk-header">
       <div class="pk-name">${name}</div>
@@ -663,14 +825,18 @@ function createPopup(cp, status) {
         <div class="pk-vacancy-label"><strong>${statusText}</strong><br>${cp.district_tc || ''}</div>
       </div>
       <span class="pk-badge onstreet">📍 街上感應泊位</span>
+      <a class="pk-nav-btn" href="https://www.google.com/maps/dir/?api=1&destination=${parseFloat(cp.latitude)},${parseFloat(cp.longitude)}" target="_blank" rel="noopener">📍 Google Maps 導航</a>
+      <button class="pk-nav-btn" id="pkFavBtn" data-id="${id}" style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 2px 8px rgba(245,158,11,.35);margin-top:6px">${faved}</button>
       ${cp.last_change ? `<div class="pk-lastupdate">更新: ${cp.last_change}</div>` : ''}
     </div>`;
   }
 
   const v = cp.vacancy;
   const vacNum = v !== null && v >= 0 ? v : '--';
-  const statusLabel = status === 'green' ? '有空位' : status === 'red' ? '已滿' : '無數據';
+  const statusLabel = status === 'green' ? '有空位' : status === 'red' ? '已滿' : status === 'unknown' ? '未知' : '無數據';
   const district = cp.district_tc || '';
+  const id2 = cp.park_id || cp.id;
+  const faved2 = isFavorite(id2) ? '已收藏 ⭐' : '收藏 ☆';
 
   return `
     <div class="pk-header">
@@ -693,27 +859,41 @@ function createPopup(cp, status) {
         </div>
         ${cp.remark_tc ? `<div class="pk-meta-item"><div class="label">收費</div><div class="value" style="font-size:12px">${cp.remark_tc.replace(/\n/g, ' ')}</div></div>` : ''}
       </div>
+      ${trendHTML(cp)}
       <span class="pk-badge carpark">🏍️ 停車場</span>
       <a class="pk-nav-btn" href="https://www.google.com/maps/dir/?api=1&destination=${parseFloat(cp.latitude)},${parseFloat(cp.longitude)}" target="_blank" rel="noopener">
         📍 Google Maps 導航
       </a>
+      <button class="pk-nav-btn" id="pkFavBtn" data-id="${id2}" style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 2px 8px rgba(245,158,11,.35);margin-top:6px">${faved2}</button>
     </div>`;
 }
 
 function updateStats() {
-  let green = 0, red = 0, gray = 0;
+  let green = 0, red = 0, gray = 0, unknown = 0;
   const all = [...carparkData, ...onstreetData];
   all.forEach(cp => {
     const s = getStatus(cp);
     if (s === 'green') green++;
     else if (s === 'red') red++;
+    else if (s === 'unknown') unknown++;
     else gray++;
   });
   const cpCount = carparkData.length, osCount = onstreetData.length;
   document.getElementById('total-count').textContent = `${cpCount}停 + ${osCount}街上`;
   document.getElementById('stat-green').textContent = green;
   document.getElementById('stat-red').textContent = red;
-  document.getElementById('stat-gray').textContent = gray;
+  document.getElementById('stat-gray').textContent = gray + (unknown ? ` (+${unknown}未知)` : '');
+}
+
+function setupDistrictPills() {
+  document.querySelectorAll('.district-pill').forEach(pill => {
+    pill.onclick = () => {
+      document.querySelectorAll('.district-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentDistrict = pill.dataset.d;
+      loadStopsInView();
+    };
+  });
 }
 
 function setupFilterPills() {
@@ -721,11 +901,28 @@ function setupFilterPills() {
     pill.onclick = () => {
       document.querySelectorAll('.filter-card .pill').forEach(p => p.classList.remove('active'));
       pill.classList.add('active');
-      currentFilter = pill.dataset.v;
+      if (pill.dataset.vt) {
+        currentVehicle = pill.dataset.vt;
+      } else if (pill.dataset.v) {
+        currentFilter = pill.dataset.v;
+      }
       loadStopsInView();
     };
   });
 }
+
+// 收藏按鈕（popup 內動態生成 → document delegation）
+document.addEventListener('click', function (e) {
+  const btn = e.target.closest('#pkFavBtn');
+  if (btn) {
+    e.preventDefault();
+    const id = btn.dataset.id;
+    if (!id) return;
+    const added = toggleFavorite(id);
+    showToast(added ? '⭐ 已加入收藏' : '☆ 已取消收藏');
+    setTimeout(() => location.reload(), 600);
+  }
+});
 
 function setupTypePills() {
   document.querySelectorAll('.type-pill').forEach(pill => {
