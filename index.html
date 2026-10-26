@@ -725,7 +725,7 @@ async function loadData() {
     // 喺 Android WebView 度相對路徑 `parking-data.json` 會指去本機 → 用絕對 URL 指向線上
     const dataUrl = (
       location.hostname === 'localhost' || location.protocol === 'file:' || !location.hostname
-    ) ? 'https://hkteddychan.github.io/parking-map/parking-data.json' : 'parking-data.json';
+    ) ? 'https://hkteddychan.github.io/Parking-Map/parking-data.json' : 'parking-data.json';
     const jsonRes = await fetch(dataUrl, { cache: 'no-store' });
     const jsonData = await jsonRes.json();
     onstreetData = (jsonData.onstreet || []).map(os => ({ ...os, type: 'onstreet' }));
